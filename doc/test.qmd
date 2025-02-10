@@ -1,0 +1,11 @@
+cd d---
+title: "Proposal: [Your project name]"
+subtitle: "DATA 450 Capstone"
+author: "[Your Name]"
+date: today
+date-format: long
+bibliography: references.bib
+number-sections: true
+format:
+  pdf: default
+---
