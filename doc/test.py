@@ -5,7 +5,19 @@ from scipy.signal import find_peaks
 ds = xr.open_dataset("hgt.2010.nc")
 print(ds['hgt'])
 
-nyc_500hpa = ds['hgt'].sel(lat=40.7128, lon=-74.0060, method='nearest').isel(level=6)
+
+# Check available levels
+print("Available levels:", ds["level"].values)
+
+nyc_500hpa = ds['hgt'].sel(lat=40.7128, lon=74.0060, level=500.0, method="nearest")
+nyc_500hpa.plot()
+plt.title("Geopotential Height at 500 mb for NYC (2010)")
+plt.ylabel("Geopotential Height (m)")
+plt.xlabel("Time (Days)")
+plt.show()
+
+
+nyc_500hpa = ds['hgt'].sel(lat=40.7128, lon=74.0060, level=500, method='nearest')
 nyc_500hpa.plot()
 plt.title("Geopotential Height at 500 mb for NYC (2010)")
 plt.ylabel("Geopotential Height (m)")
@@ -14,7 +26,7 @@ plt.show()
 
 
 ds_1979 = xr.open_dataset("hgt.1979.nc")
-nyc_500mb_1979 = ds_1979['hgt'].sel(lat=40.7128, lon=-74.0060, method='nearest').isel(level=6)
+nyc_500mb_1979 = ds_1979['hgt'].sel(lat=40.7128, lon=-74.0060, level=500, method='nearest')
 nyc_500mb_1979.plot()
 plt.title("Geopotential Height at 500 mb for NYC (1979)")
 plt.ylabel("Geopotential Height (m)")
@@ -23,7 +35,7 @@ plt.show()
 
 
 ds_2024 = xr.open_dataset("hgt.2024.nc")
-nyc_500mb_2024 = ds_2024['hgt'].sel(lat=40.7128, lon=-74.0060, method='nearest').isel(level=6)
+nyc_500mb_2024 = ds_2024['hgt'].sel(lat=40.7128, lon=-74.0060, level=500, method='nearest')
 nyc_500mb_2024.plot()
 plt.title("Geopotential Height at 500 mb for NYC (2024)")
 plt.ylabel("Geopotential Height (m)")
@@ -52,11 +64,11 @@ file_names = [
 
 # NYC coordinates
 nyc_lat = 40.7128
-nyc_lon = -74.0060
+nyc_lon = 74.0060
 
 for file in file_names:
     ds = xr.open_dataset(file)
-    nyc_series = ds['hgt'].sel(lat=nyc_lat, lon=nyc_lon, method='nearest').isel(level=6)
+    nyc_series = ds['hgt'].sel(lat=nyc_lat, lon=nyc_lon, level=500, method='nearest')
     hgt_values = nyc_series.values
 
     peaks, _ = find_peaks(hgt_values, distance=10)
