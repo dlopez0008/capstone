@@ -1,13 +1,11 @@
 import xarray as xr
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.signal import find_peaks
-from sklearn.linear_model import LinearRegression
 
 nyc_lat = 40.7128
 nyc_lon = 74.0060
-file_list = [f"hgt.{year}.nc" for year in range(1979, 2022)]
+file_list = [f"hgt.{year}.nc" for year in range(1980, 2022)]
 ts_list = []
 for file in file_list:
     ds = xr.open_dataset(file)
@@ -38,4 +36,6 @@ plt.xlabel("Year")
 plt.ylabel("Number of Peaks")
 plt.legend(title="Season")
 plt.grid()
+plt.yticks(np.arange(10, 21, 2)) 
+plt.ylim(10, 21)     
 plt.show()

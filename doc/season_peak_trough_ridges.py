@@ -6,8 +6,8 @@ from scipy.signal import find_peaks
 
 
 nyc_lat = 40.7128
-nyc_lon = -74.0060
-file_list = [f"hgt.{year}.nc" for year in range(1979, 2022)]
+nyc_lon = 74.0060
+file_list = [f"hgt.{year}.nc" for year in range(1980, 2022)]
 ts_list = []
 for file in file_list:
     ds = xr.open_dataset(file)
