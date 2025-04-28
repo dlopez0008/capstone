@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Lopez">
+<meta name="dcterms.date" content="2025-04-27">
+
+<title>Ridges, Troughs, and NYC Extremes: Unraveling Upper-Tropospheric Patterns Over Time</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="blogpost_files/libs/clipboard/clipboard.min.js"></script>
+<script src="blogpost_files/libs/quarto-html/quarto.js"></script>
+<script src="blogpost_files/libs/quarto-html/popper.min.js"></script>
+<script src="blogpost_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="blogpost_files/libs/quarto-html/anchor.min.js"></script>
+<link href="blogpost_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="blogpost_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="blogpost_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="blogpost_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="blogpost_files/libs/bootstrap/bootstrap-973236bd072d72a04ee9cd82dcc9cb29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset">The Dataset</a></li>
+  <li><a href="#the-method" id="toc-the-method" class="nav-link" data-scroll-target="#the-method">The Method</a></li>
+  <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
+  <li><a href="#tracking-changes-in-peak-frequency-over-time" id="toc-tracking-changes-in-peak-frequency-over-time" class="nav-link" data-scroll-target="#tracking-changes-in-peak-frequency-over-time">Tracking Changes in Peak Frequency Over Time</a></li>
+  <li><a href="#seasonal-analysis-of-geopotential-height-peaks-over-nyc-19802021" id="toc-seasonal-analysis-of-geopotential-height-peaks-over-nyc-19802021" class="nav-link" data-scroll-target="#seasonal-analysis-of-geopotential-height-peaks-over-nyc-19802021">Seasonal Analysis of Geopotential Height Peaks over NYC (1980–2021)</a></li>
+  <li><a href="#identifying-and-visualizing-extremes-top-and-bottom-5-in-500-hpa-geopotential-height" id="toc-identifying-and-visualizing-extremes-top-and-bottom-5-in-500-hpa-geopotential-height" class="nav-link" data-scroll-target="#identifying-and-visualizing-extremes-top-and-bottom-5-in-500-hpa-geopotential-height">Identifying and Visualizing Extremes (top and bottom 5%) in 500 hPa Geopotential Height</a></li>
+  <li><a href="#modeling-seasonal-cycles-and-long-term-changes-with-harmonic-regression" id="toc-modeling-seasonal-cycles-and-long-term-changes-with-harmonic-regression" class="nav-link" data-scroll-target="#modeling-seasonal-cycles-and-long-term-changes-with-harmonic-regression">Modeling Seasonal Cycles and Long Term Changes with Harmonic Regression</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Ridges, Troughs, and NYC Extremes: Unraveling Upper-Tropospheric Patterns Over Time</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Lopez </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 27, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="capstone/doc/blogpost_image.jpeg" class="img-fluid figure-img"></p>
+<figcaption>Upper-Tropospheric Patterns</figcaption>
+</figure>
+</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Have you ever wondered what’s happening above when extreme weather strikes New York City? While we often look at surface temperatures or rainfall rates, the answer may lie 5.5 kilometers overhead, in the upper troposphere.</p>
+<p>The hidden rhythms of the atmosphere reveal themselves through sweeping patterns of upper-tropospheric circulation, particularly at the 500 hPa level. High above New York City, ridges and troughs carve invisible highways in the sky, steering the weather systems that bring heat waves, powerful storms, and stubborn droughts. By examining decades of atmospheric data, it’s possible to trace how these large scale features have shifted over time and how their evolving behavior connects to the extreme weather events that shape daily life in NYC.</p>
+</section>
+<section id="the-dataset" class="level1">
+<h1>The Dataset</h1>
+<p>Capturing the story of the atmosphere requires looking high above the skyline, where patterns at the 500 hPa level quietly shape the weather we experience below.</p>
+<p>To piece together this story, I worked with daily geopotential height data spanning from 1979 to 2021, a time frame long enough to reveal both subtle shifts and dramatic changes. I focused specifically on the grid point closest to New York City’s latitude and longitude, zeroing in on the atmospheric fingerprints left above the city through heatwaves, storms, and droughts.</p>
+<p>With this long, continuous record, it became possible to trace the rising and falling of ridges and troughs over decades, offering a detailed glimpse into how the atmosphere’s high-altitude patterns have evolved alongside the city they influence.</p>
+</section>
+<section id="the-method" class="level1">
+<h1>The Method</h1>
+<p>Revealing the patterns hidden high above New York City started with organizing decades of atmospheric data into a form that could be carefully explored.</p>
+<p>Using Python tools like <code>xarray</code> and <code>pandas</code>, I gathered daily geopotential height values at the 500 hPa level from 1979 to 2024, focusing on the grid point closest to NYC’s coordinates.</p>
+<p>The data was first broken down year by year, capturing the unique atmospheric fingerprint of each calendar year. From there, it was organized decade by decade to trace broader shifts across longer timescales. To dig even deeper, each year was further separated season by season, Spring, Summer, Fall, and Winter, making it possible to observe how the behavior of ridges and troughs evolved not only over decades, but also within the natural flow of each year.</p>
+<p>With the seasons, years, and decades carefully mapped out, the foundation was set for a closer look at how the upper atmosphere shapes NYC’s most extreme weather.</p>
+</section>
+<section id="analysis" class="level1">
+<h1>Analysis</h1>
+<div id="351d388a" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> find_peaks</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>file_names <span class="op">=</span> [</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1979.nc"</span>, <span class="st">"hgt.1980.nc"</span>, <span class="st">"hgt.1981.nc"</span>, <span class="st">"hgt.1982.nc"</span>, <span class="st">"hgt.1983.nc"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1984.nc"</span>, <span class="st">"hgt.1985.nc"</span>, <span class="st">"hgt.1986.nc"</span>, <span class="st">"hgt.1987.nc"</span>, <span class="st">"hgt.1988.nc"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1989.nc"</span>, <span class="st">"hgt.1990.nc"</span>, <span class="st">"hgt.1991.nc"</span>, <span class="st">"hgt.1992.nc"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1993.nc"</span>, <span class="st">"hgt.1994.nc"</span>, <span class="st">"hgt.1995.nc"</span>, <span class="st">"hgt.1996.nc"</span>, <span class="st">"hgt.1997.nc"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1998.nc"</span>, <span class="st">"hgt.1999.nc"</span>, <span class="st">"hgt.2000.nc"</span>, <span class="st">"hgt.2001.nc"</span>, <span class="st">"hgt.2002.nc"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2003.nc"</span>, <span class="st">"hgt.2004.nc"</span>, <span class="st">"hgt.2005.nc"</span>, <span class="st">"hgt.2006.nc"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2007.nc"</span>, <span class="st">"hgt.2008.nc"</span>, <span class="st">"hgt.2009.nc"</span>, <span class="st">"hgt.2010.nc"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2011.nc"</span>, <span class="st">"hgt.2012.nc"</span>, <span class="st">"hgt.2013.nc"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2014.nc"</span>, <span class="st">"hgt.2015.nc"</span>, <span class="st">"hgt.2016.nc"</span>, <span class="st">"hgt.2017.nc"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2018.nc"</span>, <span class="st">"hgt.2019.nc"</span>, <span class="st">"hgt.2020.nc"</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2021.nc"</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># NYC coordinates</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_names:</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>   ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>   nyc_series <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="dv">500</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>   hgt_values <span class="op">=</span> nyc_series.values</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>   peaks, _ <span class="op">=</span> find_peaks(hgt_values, distance<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>   troughs, _ <span class="op">=</span> find_peaks(<span class="op">-</span>hgt_values, distance<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>   plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>   plt.plot(hgt_values, label<span class="op">=</span><span class="st">"Geopotential Height (500 mb)"</span>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>   plt.scatter(peaks, hgt_values[peaks], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">"Ridges (Peaks)"</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>   plt.scatter(troughs, hgt_values[troughs], color<span class="op">=</span><span class="st">'blue'</span>, label<span class="op">=</span><span class="st">"Troughs (Valleys)"</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>   plt.title(<span class="ss">f"Geopotential Height at 500 mb for NYC (</span><span class="sc">{</span><span class="bu">file</span><span class="sc">.</span>split(<span class="st">'.'</span>)[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>   plt.xlabel(<span class="st">"Time (Days)"</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>   plt.ylabel(<span class="st">"Geopotential Height (m)"</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>   plt.legend()</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>   plt.show()</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>   ds.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/davidlopez/opt/anaconda3/envs/capstone/lib/python3.12/site-packages/xarray/backends/plugins.py:110: RuntimeWarning:
+
+Engine 'rasterio' loading failed:
+numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-2.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-3.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-4.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-5.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-6.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-7.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-8.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-9.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-10.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-11.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-12.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-13.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-14.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-15.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-16.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-17.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-18.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-19.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-20.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-21.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-22.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-23.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-24.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-25.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-26.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-27.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-28.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-29.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-30.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-31.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-32.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-33.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-34.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-35.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-36.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-37.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-38.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-39.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-40.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-41.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-42.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-43.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-2-output-44.png" width="825" height="376" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Before diving into long term trends or seasonal composites, it was important to first get a clear sense of how ridges and troughs appeared in the raw data itself.</p>
+<p>Using Python, I loaded each year’s data file, spanning from 1979 to 2021, and isolated the grid point closest to NYC’s coordinates (approximately 40.7°N, 74.0°W) at the 500 hPa level. For every year, I extracted the time series of daily geopotential height values, providing a day by day view of how the atmosphere’s “pressure surface” moved up and down over the city.</p>
+<p>To identify key moments when the atmosphere formed strong ridges or deep troughs, I used a simple peak finding algorithm. Peaks in the data corresponded to atmospheric ridges (linked to heatwaves and calmer weather), while troughs indicated dips in the height field (often connected to storms and unsettled weather).</p>
+<p>By plotting each year individually and marking the detected peaks and troughs, it became possible to visually confirm the natural variability in NYC’s upper-atmospheric conditions. These plots provided an essential first step: establishing a clear baseline of how ridges and troughs appeared in the daily data before moving into deeper, more structured seasonal and decadal analysis.</p>
+</section>
+<section id="tracking-changes-in-peak-frequency-over-time" class="level1">
+<h1>Tracking Changes in Peak Frequency Over Time</h1>
+<p>After confirming how ridges and troughs appeared in the daily data, the next step was to look at the bigger picture: how often strong upper-tropospheric features, both ridges and troughs were forming each year, and whether that frequency had shifted over time.</p>
+<p>To do this, I combined the daily geopotential height data for NYC from 1980 to 2021 into one continuous time series. Using a peak detection method, I identified all days when the 500 hPa geopotential height rose or dipped significantly relative to the mean, capturing both atmospheric ridges (highs) and troughs (lows).</p>
+<p>Once the peaks were detected, I counted the total number each year. This provided a simple but powerful measure: the annual count of prominent atmospheric waves impacting NYC.</p>
+<p>From there, I fit a linear trend to the yearly counts to see if there was a clear long term pattern, whether the number of large scale features was increasing, decreasing, or holding steady over time. To smooth out short term ups and downs, I also calculated a five year rolling average.</p>
+<p>Plotting all of this together, the raw yearly counts, the trend line, and the rolling average revealed important first insights into how the upper atmosphere’s day to day variability over NYC has evolved across recent decades. This step helped bridge the gap between individual daily events and longer term atmospheric behavior.</p>
+<div id="5958c586" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> find_peaks</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> [<span class="ss">f"hgt.</span><span class="sc">{</span>year<span class="sc">}</span><span class="ss">.nc"</span> <span class="cf">for</span> year <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1980</span>, <span class="dv">2022</span>)]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>ts_list <span class="op">=</span> []</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_list:</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    nyc_500hpa <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="fl">500.0</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    ts_list.append(nyc_500hpa)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>hgt_500_nyc <span class="op">=</span> xr.concat(ts_list, dim<span class="op">=</span><span class="st">"time"</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> hgt_500_nyc.to_dataframe().reset_index().set_index(<span class="st">"time"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">"hgt"</span>].values </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>time <span class="op">=</span> df.index </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>peaks, _ <span class="op">=</span> find_peaks(y, height<span class="op">=</span>np.mean(y))</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>peak_dates <span class="op">=</span> time[peaks]</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>df_peaks <span class="op">=</span> pd.DataFrame({<span class="st">"date"</span>: peak_dates})</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>df_peaks[<span class="st">"year"</span>] <span class="op">=</span> df_peaks[<span class="st">"date"</span>].dt.year</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>peak_counts <span class="op">=</span> df_peaks.groupby(<span class="st">"year"</span>).size().reset_index(name<span class="op">=</span><span class="st">"peak_count"</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> peak_counts[<span class="st">"year"</span>].values.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>) </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> peak_counts[<span class="st">"peak_count"</span>].values</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>trend_line <span class="op">=</span> model.predict(X)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>peak_counts[<span class="st">"rolling_avg"</span>] <span class="op">=</span> peak_counts[<span class="st">"peak_count"</span>].rolling(window<span class="op">=</span><span class="dv">5</span>, center<span class="op">=</span><span class="va">True</span>).mean()</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>plt.plot(peak_counts[<span class="st">"year"</span>], peak_counts[<span class="st">"peak_count"</span>], marker<span class="op">=</span><span class="st">"o"</span>, linestyle<span class="op">=</span><span class="st">"-"</span>, color<span class="op">=</span><span class="st">"r"</span>, label<span class="op">=</span><span class="st">"Annual Peak Count"</span>)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>plt.plot(peak_counts[<span class="st">"year"</span>], trend_line, linestyle<span class="op">=</span><span class="st">"--"</span>, color<span class="op">=</span><span class="st">"b"</span>, label<span class="op">=</span><span class="st">"Linear Trend"</span>)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>plt.plot(peak_counts[<span class="st">"year"</span>], peak_counts[<span class="st">"rolling_avg"</span>], linestyle<span class="op">=</span><span class="st">"-"</span>, color<span class="op">=</span><span class="st">"g"</span>, label<span class="op">=</span><span class="st">"5-Year Rolling Average"</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Number of Peaks"</span>)</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Trend in Annual Count of Geopotential Height Peaks (500 hPa, NYC)"</span>)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>plt.yticks(np.arange(<span class="dv">30</span>, <span class="dv">65</span>, <span class="dv">5</span>))</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">30</span>, <span class="dv">60</span>)                 </span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>slope <span class="op">=</span> model.coef_[<span class="dv">0</span>]</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Linear trend slope: </span><span class="sc">{</span>slope<span class="sc">:.2f}</span><span class="ss"> peaks per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-3-output-1.png" width="808" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear trend slope: 0.03 peaks per year</code></pre>
+</div>
+</div>
+<p>The figure above shows how the total number of significant geopotential height peaks (both ridges and troughs) at 500 hPa over New York City varied each year from 1980 through 2021. Overall, the plot reveals considerable year to year variability in the number of peaks, with annual totals generally fluctuating between about 35 and 50 peaks per year. Some years exhibit sharper increases or decreases compared to surrounding years, highlighting the natural atmospheric variability that can occur on annual timescales. This variability may reflect influences from broader climate patterns such as the El Niño–Southern Oscillation (ENSO) or the North Atlantic Oscillation (NAO), but also a large degree of random, chaotic behavior inherent to the mid-latitude atmosphere.</p>
+<p>Despite the strong fluctuations from year to year, the linear trend line fitted through the data (shown as a dashed blue line) does reveal a slight positive slope, indicating a minimal upward trend in peak frequency. Although the increase appears small, it is important to recognize that even subtle changes in the behavior of upper-tropospheric circulation can have significant impacts. A slight rise in the number of disturbances could potentially lead to more frequent weather disruptions at the surface, such as shifts in storm tracks, changes in precipitation patterns, or more episodes of extreme weather affecting the NYC region.</p>
+<p>A closer inspection of the five year rolling average reveals an important feature beginning around 2018. For much of the record, the rolling average remained fairly constrained between approximately 40 and 45 peaks per year, underscoring the relative stability of annual upper-tropospheric dynamical activity over New York City. However, around 2018, the five year rolling average crosses above 45 for the first time in the dataset. This shift suggests that during the late 2010s, there was a notable clustering of years with higher than average peak counts. Although this upward movement is subtle, it breaks from the previous multi decade pattern of bounded variability. The fact that the rolling mean exceeds its historical range hints at a potential emerging signal of increased dynamical activity at 500 hPa, which could have downstream impacts on surface weather patterns. Even minor increases in the frequency of ridges and troughs can modulate storminess, precipitation extremes, and temperature variability in the NYC region, meaning that this change, while modest in absolute terms, warrants attention.</p>
+</section>
+<section id="seasonal-analysis-of-geopotential-height-peaks-over-nyc-19802021" class="level1">
+<h1>Seasonal Analysis of Geopotential Height Peaks over NYC (1980–2021)</h1>
+<p>To better understand how upper-tropospheric dynamics may vary not just year to year, but within different times of the year, we separated the peaks by season. Examining trends by season can provide insight into whether particular parts of the year,are becoming more dynamically active. By grouping the detected peaks into seasonal categories and analyzing how the frequency of these peaks has changed over time, we can identify more nuanced patterns that annual summaries might obscure.</p>
+<div id="5767cedb" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> find_peaks</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> [<span class="ss">f"hgt.</span><span class="sc">{</span>year<span class="sc">}</span><span class="ss">.nc"</span> <span class="cf">for</span> year <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1980</span>, <span class="dv">2022</span>)]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>ts_list <span class="op">=</span> []</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_list:</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>   ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>   nyc_500hpa <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="fl">500.0</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>   ts_list.append(nyc_500hpa)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>hgt_500_nyc <span class="op">=</span> xr.concat(ts_list, dim<span class="op">=</span><span class="st">"time"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> hgt_500_nyc.to_dataframe().reset_index()</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"year"</span>] <span class="op">=</span> df[<span class="st">"time"</span>].dt.year</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"month"</span>] <span class="op">=</span> df[<span class="st">"time"</span>].dt.month</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>season_map <span class="op">=</span> {<span class="dv">12</span>: <span class="st">"Winter"</span>, <span class="dv">1</span>: <span class="st">"Winter"</span>, <span class="dv">2</span>: <span class="st">"Winter"</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>             <span class="dv">3</span>: <span class="st">"Spring"</span>, <span class="dv">4</span>: <span class="st">"Spring"</span>, <span class="dv">5</span>: <span class="st">"Spring"</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>             <span class="dv">6</span>: <span class="st">"Summer"</span>, <span class="dv">7</span>: <span class="st">"Summer"</span>, <span class="dv">8</span>: <span class="st">"Summer"</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>             <span class="dv">9</span>: <span class="st">"Fall"</span>, <span class="dv">10</span>: <span class="st">"Fall"</span>, <span class="dv">11</span>: <span class="st">"Fall"</span>}</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"season"</span>] <span class="op">=</span> df[<span class="st">"month"</span>].<span class="bu">map</span>(season_map)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">"hgt"</span>].values </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>peaks, _ <span class="op">=</span> find_peaks(y, prominence<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>df_peaks <span class="op">=</span> df.iloc[peaks].copy()</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>df_peaks[<span class="st">"peak_intensity"</span>] <span class="op">=</span> df_peaks[<span class="st">"hgt"</span>]</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>df_peaks <span class="op">=</span> df_peaks[[<span class="st">"time"</span>, <span class="st">"hgt"</span>, <span class="st">"peak_intensity"</span>, <span class="st">"year"</span>, <span class="st">"season"</span>]]</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>peak_counts_seasonal <span class="op">=</span> df_peaks.groupby([<span class="st">"year"</span>, <span class="st">"season"</span>]).size().unstack()</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>peak_counts_seasonal.rolling(window<span class="op">=</span><span class="dv">5</span>, min_periods<span class="op">=</span><span class="dv">1</span>).mean().plot(marker<span class="op">=</span><span class="st">"o"</span>, linestyle<span class="op">=</span><span class="st">"-"</span>, ax<span class="op">=</span>plt.gca())</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Seasonal Peak Frequency Trends (500 hPa Geopotential Height)"</span>)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Number of Peaks"</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>plt.legend(title<span class="op">=</span><span class="st">"Season"</span>)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>plt.yticks(np.arange(<span class="dv">10</span>, <span class="dv">21</span>, <span class="dv">2</span>))</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">10</span>, <span class="dv">21</span>)    </span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-4-output-1.png" width="957" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure displays the annual number of seasonal peaks in 500 hPa geopotential height over New York City from 1979 to 2021. Each line represents one season: Winter (red), Spring (orange), Summer (green), and Fall (blue). Winter consistently has the highest number of peaks each year, highlighting the season’s strong dynamical activity typically associated with more active weather patterns like storms and stronger jet streams. Fall follows closely behind, while Spring and Summer generally record fewer peaks, consistent with the relatively quieter atmospheric conditions expected in warmer months.</p>
+<p>Notably, Spring shows a sharp decline in peak counts during the early 1980s, stabilizing at lower values thereafter. Winter displays some variability across the record, with slight increases in peak counts in the early 2000s and mid 2010s. Summer remains relatively steady over time, although there are small oscillations year to year. Fall shows more variability but tends to hover around a similar range throughout the period. Overall, while there is year to year variability, the seasonal patterns remain remarkably stable. However, subtle increases or decreases within seasons,especially Winter’s slight upward swings in more recent years,may signal emerging shifts in the behavior of upper-tropospheric dynamics over the region. While seasonal patterns of peak frequency have remained relatively consistent since 1980, small but noticeable fluctuations,particularly during Winter, highlight the importance of monitoring subtle changes in upper-tropospheric dynamics, as even modest shifts can influence local and regional weather variability over time.</p>
+</section>
+<section id="identifying-and-visualizing-extremes-top-and-bottom-5-in-500-hpa-geopotential-height" class="level1">
+<h1>Identifying and Visualizing Extremes (top and bottom 5%) in 500 hPa Geopotential Height</h1>
+<p>When analyzing upper-tropospheric dynamics, it is crucial not only to understand the overall patterns but also to specifically highlight the most extreme events. By isolating the top and bottom 5% of weekly averaged 500 hPa geopotential height values, we can focus on the strongest ridging (extreme highs) and deepest troughing (extreme lows) over NYC.</p>
+<p>This approach allows us to better capture and visualize the rare, high impact atmospheric configurations that may drive significant local weather events, such as heatwaves, cold snaps, and major storms.</p>
+<p>Below, we apply this method to identify and plot these extreme events.</p>
+<div id="c3daf98b" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> [<span class="ss">f"hgt.</span><span class="sc">{</span>year<span class="sc">}</span><span class="ss">.nc"</span> <span class="cf">for</span> year <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1980</span>, <span class="dv">2022</span>)]</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>ts_list <span class="op">=</span> []</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_list:</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>   ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>   nyc_500hpa <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="fl">500.0</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>   ts_list.append(nyc_500hpa)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>hgt_500_nyc <span class="op">=</span> xr.concat(ts_list, dim<span class="op">=</span><span class="st">"time"</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> hgt_500_nyc.to_dataframe().reset_index().set_index(<span class="st">"time"</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.resample(<span class="st">"W"</span>).mean()</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>upper_threshold <span class="op">=</span> np.percentile(df[<span class="st">"hgt"</span>], <span class="dv">95</span>) </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>lower_threshold <span class="op">=</span> np.percentile(df[<span class="st">"hgt"</span>], <span class="dv">5</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>extreme_highs <span class="op">=</span> df[df[<span class="st">"hgt"</span>] <span class="op">&gt;=</span> upper_threshold]</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>extreme_lows <span class="op">=</span> df[df[<span class="st">"hgt"</span>] <span class="op">&lt;=</span> lower_threshold]</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>plt.plot(df.index, df[<span class="st">"hgt"</span>], label<span class="op">=</span><span class="st">"500 hPa Geopotential Height"</span>, color<span class="op">=</span><span class="st">'blue'</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>plt.scatter(extreme_highs.index, extreme_highs[<span class="st">"hgt"</span>], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">"Extreme Ridges (Top 5%)"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>plt.scatter(extreme_lows.index, extreme_lows[<span class="st">"hgt"</span>], color<span class="op">=</span><span class="st">'black'</span>, label<span class="op">=</span><span class="st">"Extreme Troughs (Bottom 5%)"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>plt.axhline(upper_threshold, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'dashed'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">"95th Percentile"</span>)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>plt.axhline(lower_threshold, color<span class="op">=</span><span class="st">'black'</span>, linestyle<span class="op">=</span><span class="st">'dashed'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">"5th Percentile"</span>)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Geopotential Height (m)"</span>)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Extreme Events in 500 hPa Geopotential Height Over NYC"</span>)</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="blogpost_files/figure-html/cell-5-output-1.png" width="602" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above shows the weekly averaged 500 hPa geopotential height over New York City from 1979 to 2021, highlighting the most extreme atmospheric events. The blue curve traces the natural week to week variability of the geopotential height field, giving us a sense of the background fluctuations in the upper-troposphere. Overlaid on this curve are two sets of highlighted points: the red dots represent the top 5% of weekly geopotential height values, corresponding to extreme ridging events, while the black dots capture the bottom 5% of values, signaling extreme troughing events. To better visualize where these extremes sit relative to the full distribution, we also include dashed lines marking the 95th percentile (in red) and the 5th percentile (in black).</p>
+<p>This visualization allows us to isolate and study the most significant departures from typical conditions. By focusing on these extreme highs and lows, we can begin to uncover patterns associated with impactful weather events, such as heat waves linked to strong ridging or storms and cold air outbreaks associated with deep troughs. Identifying these extreme cases within the broader dataset provides a clearer lens for analyzing how the frequency and characteristics of extreme atmospheric conditions may have shifted over time, setting up the next steps in our analysis.</p>
+</section>
+<section id="modeling-seasonal-cycles-and-long-term-changes-with-harmonic-regression" class="level1">
+<h1>Modeling Seasonal Cycles and Long Term Changes with Harmonic Regression</h1>
+<p>To better understand the underlying structure of the 500 hPa geopotential height variability over New York City, we turn to harmonic regression. I chose this approach because the atmosphere naturally exhibits strong periodic behavior, particularly tied to the seasons. The rise and fall of geopotential heights throughout the year are not random; they follow a predictable, wave like pattern that harmonic regression is specifically designed to capture. By fitting sine and cosine functions to our data, we can model the repeating annual cycle with precision while also detecting any shifts or trends that depart from this expected rhythm.</p>
+<p>Harmonic regression is particularly well suited for our research goals because it allows us to separate the regular, seasonally driven variability from the less predictable anomalies. In other words, it helps us see both the forest and the trees: we can quantify the typical yearly cycle of the atmosphere while also tracking how the timing, amplitude, or baseline of that cycle might be changing over time. This separation is crucial for identifying subtle but important signals, such as the amplification or weakening of seasonal peaks, or the gradual rise or fall in mean geopotential heights that could hint at broader climatic shifts.</p>
+<p>To build our model, we incorporated several key components. First, we included a constant and a linear trend term to account for any long term changes in the data, such as a steady increase or decrease in average geopotential height over the decades. Next, to capture the strong seasonal cycle, we used a set of Fourier terms, representing annual periodicity with multiple harmonics to allow flexibility in the shape of the seasonal pattern. Finally, we fit a Seasonal ARIMA model to the residuals, helping account for any remaining autocorrelation and further improving the accuracy of our forecasts. Together, this Dynamic Harmonic Regression framework provides a powerful way to model both the predictable seasonal patterns and the less predictable long term variations in the 500 hPa geopotential height field over NYC.</p>
+<p>Once the Dynamic Harmonic Regression (DHR) model is fitted, we can visualize both the historical observations and the forecasted behavior of the 500 hPa geopotential height over New York City. In the resulting plot, the solid blue line represents the observed weekly averaged geopotential heights from 1979 to 2021. This line captures the familiar seasonal rhythm, rising and falling with the natural progression of the seasons, but also reveals subtle year to year variations. Overlaid on the observations is a red dashed line, which shows the forecast produced by our harmonic regression model. Extending five years beyond the end of our dataset, this forecast projects the expected seasonal behavior of geopotential heights based on the patterns learned from the historical record. The model’s strength lies in its ability to maintain the seasonal structure, the characteristic peaks and valleys, while allowing for gradual shifts in the baseline level or in the amplitude of the cycles.</p>
+<p>By comparing the forecast to the historical data, we can assess not only the persistence of the seasonal cycle but also whether any underlying trends are projected to continue into the near future. For example, if the baseline of the forecast continues to rise, it would suggest that geopotential heights at 500 hPa over NYC are trending higher, a signal that could be associated with broader changes in atmospheric circulation patterns or warming related impacts. Alternatively, shifts in the amplitude or timing of the seasonal peaks could point to changing dynamics in the way the atmosphere transitions between seasons.</p>
+<p>This visualization serves as both a check on our model’s performance, how well it reproduces past behavior, and as a tool for gaining insight into the future behavior of extreme events, seasonal cycles, and long term trends in the upper-troposphere over New York City.</p>
+<!-- -->
+
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Ridges, Troughs, and NYC Extremes: Unraveling Upper-Tropospheric Patterns Over Time"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "David Lopez"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2025-04-27"</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="an">number-sections:</span><span class="co"> false</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: default</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">    rendering: embed-resources</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> python3</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="al">![Upper-Tropospheric Patterns](capstone/doc/blogpost_image.jpeg)</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>Have you ever wondered what’s happening above when extreme weather strikes New York City? While we often look at surface temperatures or rainfall rates, the answer may lie 5.5 kilometers overhead, in the upper troposphere.</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>The hidden rhythms of the atmosphere reveal themselves through sweeping patterns of upper-tropospheric circulation, particularly at the 500 hPa level. High above New York City, ridges and troughs carve invisible highways in the sky, steering the weather systems that bring heat waves, powerful storms, and stubborn droughts. By examining decades of atmospheric data, it’s possible to trace how these large scale features have shifted over time and how their evolving behavior connects to the extreme weather events that shape daily life in NYC.</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="fu"># The Dataset</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>Capturing the story of the atmosphere requires looking high above the skyline, where patterns at the 500 hPa level quietly shape the weather we experience below. </span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>To piece together this story, I worked with daily geopotential height data spanning from 1979 to 2021, a time frame long enough to reveal both subtle shifts and dramatic changes. I focused specifically on the grid point closest to New York City’s latitude and longitude, zeroing in on the atmospheric fingerprints left above the city through heatwaves, storms, and droughts. </span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>With this long, continuous record, it became possible to trace the rising and falling of ridges and troughs over decades, offering a detailed glimpse into how the atmosphere’s high-altitude patterns have evolved alongside the city they influence.</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="fu"># The Method</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>Revealing the patterns hidden high above New York City started with organizing decades of atmospheric data into a form that could be carefully explored. </span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>Using Python tools like <span class="in">`xarray`</span> and <span class="in">`pandas`</span>, I gathered daily geopotential height values at the 500 hPa level from 1979 to 2024, focusing on the grid point closest to NYC’s coordinates.</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>The data was first broken down year by year, capturing the unique atmospheric fingerprint of each calendar year. From there, it was organized decade by decade to trace broader shifts across longer timescales. To dig even deeper, each year was further separated season by season, Spring, Summer, Fall, and Winter, making it possible to observe how the behavior of ridges and troughs evolved not only over decades, but also within the natural flow of each year.</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>With the seasons, years, and decades carefully mapped out, the foundation was set for a closer look at how the upper atmosphere shapes NYC’s most extreme weather.</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a><span class="fu"># Analysis</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> find_peaks</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>file_names <span class="op">=</span> [</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1979.nc"</span>, <span class="st">"hgt.1980.nc"</span>, <span class="st">"hgt.1981.nc"</span>, <span class="st">"hgt.1982.nc"</span>, <span class="st">"hgt.1983.nc"</span>,</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1984.nc"</span>, <span class="st">"hgt.1985.nc"</span>, <span class="st">"hgt.1986.nc"</span>, <span class="st">"hgt.1987.nc"</span>, <span class="st">"hgt.1988.nc"</span>,</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1989.nc"</span>, <span class="st">"hgt.1990.nc"</span>, <span class="st">"hgt.1991.nc"</span>, <span class="st">"hgt.1992.nc"</span>,</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1993.nc"</span>, <span class="st">"hgt.1994.nc"</span>, <span class="st">"hgt.1995.nc"</span>, <span class="st">"hgt.1996.nc"</span>, <span class="st">"hgt.1997.nc"</span>,</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.1998.nc"</span>, <span class="st">"hgt.1999.nc"</span>, <span class="st">"hgt.2000.nc"</span>, <span class="st">"hgt.2001.nc"</span>, <span class="st">"hgt.2002.nc"</span>,</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2003.nc"</span>, <span class="st">"hgt.2004.nc"</span>, <span class="st">"hgt.2005.nc"</span>, <span class="st">"hgt.2006.nc"</span>,</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2007.nc"</span>, <span class="st">"hgt.2008.nc"</span>, <span class="st">"hgt.2009.nc"</span>, <span class="st">"hgt.2010.nc"</span>,</span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2011.nc"</span>, <span class="st">"hgt.2012.nc"</span>, <span class="st">"hgt.2013.nc"</span>,</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2014.nc"</span>, <span class="st">"hgt.2015.nc"</span>, <span class="st">"hgt.2016.nc"</span>, <span class="st">"hgt.2017.nc"</span>,</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2018.nc"</span>, <span class="st">"hgt.2019.nc"</span>, <span class="st">"hgt.2020.nc"</span>,</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>   <span class="st">"hgt.2021.nc"</span></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a><span class="co"># NYC coordinates</span></span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_names:</span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>   ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>   nyc_series <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="dv">500</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>   hgt_values <span class="op">=</span> nyc_series.values</span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a>   peaks, _ <span class="op">=</span> find_peaks(hgt_values, distance<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>   troughs, _ <span class="op">=</span> find_peaks(<span class="op">-</span>hgt_values, distance<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>   plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a>   plt.plot(hgt_values, label<span class="op">=</span><span class="st">"Geopotential Height (500 mb)"</span>)</span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>   plt.scatter(peaks, hgt_values[peaks], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">"Ridges (Peaks)"</span>)</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>   plt.scatter(troughs, hgt_values[troughs], color<span class="op">=</span><span class="st">'blue'</span>, label<span class="op">=</span><span class="st">"Troughs (Valleys)"</span>)</span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>   plt.title(<span class="ss">f"Geopotential Height at 500 mb for NYC (</span><span class="sc">{</span><span class="bu">file</span><span class="sc">.</span>split(<span class="st">'.'</span>)[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>   plt.xlabel(<span class="st">"Time (Days)"</span>)</span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a>   plt.ylabel(<span class="st">"Geopotential Height (m)"</span>)</span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a>   plt.legend()</span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>   plt.show()</span>
+<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>   ds.close()</span>
+<span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a>Before diving into long term trends or seasonal composites, it was important to first get a clear sense of how ridges and troughs appeared in the raw data itself.</span>
+<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a>Using Python, I loaded each year's data file, spanning from 1979 to 2021, and isolated the grid point closest to NYC’s coordinates (approximately 40.7°N, 74.0°W) at the 500 hPa level.</span>
+<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a>For every year, I extracted the time series of daily geopotential height values, providing a day by day view of how the atmosphere's "pressure surface" moved up and down over the city.</span>
+<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>To identify key moments when the atmosphere formed strong ridges or deep troughs, I used a simple peak finding algorithm. Peaks in the data corresponded to atmospheric ridges (linked to heatwaves and calmer weather), while troughs indicated dips in the height field (often connected to storms and unsettled weather).</span>
+<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a>By plotting each year individually and marking the detected peaks and troughs, it became possible to visually confirm the natural variability in NYC’s upper-atmospheric conditions.</span>
+<span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a>These plots provided an essential first step: establishing a clear baseline of how ridges and troughs appeared in the daily data before moving into deeper, more structured seasonal and decadal analysis.</span>
+<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a><span class="fu"># Tracking Changes in Peak Frequency Over Time</span></span>
+<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>After confirming how ridges and troughs appeared in the daily data, the next step was to look at the bigger picture: how often strong upper-tropospheric features, both ridges and troughs were forming each year, and whether that frequency had shifted over time.</span>
+<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a>To do this, I combined the daily geopotential height data for NYC from 1980 to 2021 into one continuous time series. Using a peak detection method, I identified all days when the 500 hPa geopotential height rose or dipped significantly relative to the mean, capturing both atmospheric ridges (highs) and troughs (lows).</span>
+<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>Once the peaks were detected, I counted the total number each year. This provided a simple but powerful measure: the annual count of prominent atmospheric waves impacting NYC.</span>
+<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a>From there, I fit a linear trend to the yearly counts to see if there was a clear long term pattern, whether the number of large scale features was increasing, decreasing, or holding steady over time. To smooth out short term ups and downs, I also calculated a five year rolling average.</span>
+<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a>Plotting all of this together, the raw yearly counts, the trend line, and the rolling average revealed important first insights into how the upper atmosphere’s day to day variability over NYC has evolved across recent decades. This step helped bridge the gap between individual daily events and longer term atmospheric behavior.</span>
+<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> find_peaks</span>
+<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> [<span class="ss">f"hgt.</span><span class="sc">{</span>year<span class="sc">}</span><span class="ss">.nc"</span> <span class="cf">for</span> year <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1980</span>, <span class="dv">2022</span>)]</span>
+<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a>ts_list <span class="op">=</span> []</span>
+<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_list:</span>
+<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>    ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a>    nyc_500hpa <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="fl">500.0</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a>    ts_list.append(nyc_500hpa)</span>
+<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>hgt_500_nyc <span class="op">=</span> xr.concat(ts_list, dim<span class="op">=</span><span class="st">"time"</span>)</span>
+<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> hgt_500_nyc.to_dataframe().reset_index().set_index(<span class="st">"time"</span>)</span>
+<span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-137"><a href="#cb7-137" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">"hgt"</span>].values </span>
+<span id="cb7-138"><a href="#cb7-138" aria-hidden="true" tabindex="-1"></a>time <span class="op">=</span> df.index </span>
+<span id="cb7-139"><a href="#cb7-139" aria-hidden="true" tabindex="-1"></a>peaks, _ <span class="op">=</span> find_peaks(y, height<span class="op">=</span>np.mean(y))</span>
+<span id="cb7-140"><a href="#cb7-140" aria-hidden="true" tabindex="-1"></a>peak_dates <span class="op">=</span> time[peaks]</span>
+<span id="cb7-141"><a href="#cb7-141" aria-hidden="true" tabindex="-1"></a>df_peaks <span class="op">=</span> pd.DataFrame({<span class="st">"date"</span>: peak_dates})</span>
+<span id="cb7-142"><a href="#cb7-142" aria-hidden="true" tabindex="-1"></a>df_peaks[<span class="st">"year"</span>] <span class="op">=</span> df_peaks[<span class="st">"date"</span>].dt.year</span>
+<span id="cb7-143"><a href="#cb7-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-144"><a href="#cb7-144" aria-hidden="true" tabindex="-1"></a>peak_counts <span class="op">=</span> df_peaks.groupby(<span class="st">"year"</span>).size().reset_index(name<span class="op">=</span><span class="st">"peak_count"</span>)</span>
+<span id="cb7-145"><a href="#cb7-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-146"><a href="#cb7-146" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> peak_counts[<span class="st">"year"</span>].values.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>) </span>
+<span id="cb7-147"><a href="#cb7-147" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> peak_counts[<span class="st">"peak_count"</span>].values</span>
+<span id="cb7-148"><a href="#cb7-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-149"><a href="#cb7-149" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb7-150"><a href="#cb7-150" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
+<span id="cb7-151"><a href="#cb7-151" aria-hidden="true" tabindex="-1"></a>trend_line <span class="op">=</span> model.predict(X)</span>
+<span id="cb7-152"><a href="#cb7-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-153"><a href="#cb7-153" aria-hidden="true" tabindex="-1"></a>peak_counts[<span class="st">"rolling_avg"</span>] <span class="op">=</span> peak_counts[<span class="st">"peak_count"</span>].rolling(window<span class="op">=</span><span class="dv">5</span>, center<span class="op">=</span><span class="va">True</span>).mean()</span>
+<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a>plt.plot(peak_counts[<span class="st">"year"</span>], peak_counts[<span class="st">"peak_count"</span>], marker<span class="op">=</span><span class="st">"o"</span>, linestyle<span class="op">=</span><span class="st">"-"</span>, color<span class="op">=</span><span class="st">"r"</span>, label<span class="op">=</span><span class="st">"Annual Peak Count"</span>)</span>
+<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a>plt.plot(peak_counts[<span class="st">"year"</span>], trend_line, linestyle<span class="op">=</span><span class="st">"--"</span>, color<span class="op">=</span><span class="st">"b"</span>, label<span class="op">=</span><span class="st">"Linear Trend"</span>)</span>
+<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a>plt.plot(peak_counts[<span class="st">"year"</span>], peak_counts[<span class="st">"rolling_avg"</span>], linestyle<span class="op">=</span><span class="st">"-"</span>, color<span class="op">=</span><span class="st">"g"</span>, label<span class="op">=</span><span class="st">"5-Year Rolling Average"</span>)</span>
+<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Number of Peaks"</span>)</span>
+<span id="cb7-161"><a href="#cb7-161" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Trend in Annual Count of Geopotential Height Peaks (500 hPa, NYC)"</span>)</span>
+<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>plt.yticks(np.arange(<span class="dv">30</span>, <span class="dv">65</span>, <span class="dv">5</span>))</span>
+<span id="cb7-165"><a href="#cb7-165" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">30</span>, <span class="dv">60</span>)                 </span>
+<span id="cb7-166"><a href="#cb7-166" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb7-167"><a href="#cb7-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-168"><a href="#cb7-168" aria-hidden="true" tabindex="-1"></a>slope <span class="op">=</span> model.coef_[<span class="dv">0</span>]</span>
+<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Linear trend slope: </span><span class="sc">{</span>slope<span class="sc">:.2f}</span><span class="ss"> peaks per year"</span>)</span>
+<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-171"><a href="#cb7-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a>The figure above shows how the total number of significant geopotential height peaks (both ridges and troughs) at 500 hPa over New York City varied each year from 1980 through 2021. Overall, the plot reveals considerable year to year variability in the number of peaks, with annual totals generally fluctuating between about 35 and 50 peaks per year. Some years exhibit sharper increases or decreases compared to surrounding years, highlighting the natural atmospheric variability that can occur on annual timescales. This variability may reflect influences from broader climate patterns such as the El Niño–Southern Oscillation (ENSO) or the North Atlantic Oscillation (NAO), but also a large degree of random, chaotic behavior inherent to the mid-latitude atmosphere.</span>
+<span id="cb7-173"><a href="#cb7-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a>Despite the strong fluctuations from year to year, the linear trend line fitted through the data (shown as a dashed blue line) does reveal a slight positive slope, indicating a minimal upward trend in peak frequency. Although the increase appears small, it is important to recognize that even subtle changes in the behavior of upper-tropospheric circulation can have significant impacts. A slight rise in the number of disturbances could potentially lead to more frequent weather disruptions at the surface, such as shifts in storm tracks, changes in precipitation patterns, or more episodes of extreme weather affecting the NYC region.</span>
+<span id="cb7-175"><a href="#cb7-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-176"><a href="#cb7-176" aria-hidden="true" tabindex="-1"></a>A closer inspection of the five year rolling average reveals an important feature beginning around 2018. For much of the record, the rolling average remained fairly constrained between approximately 40 and 45 peaks per year, underscoring the relative stability of annual upper-tropospheric dynamical activity over New York City. However, around 2018, the five year rolling average crosses above 45 for the first time in the dataset. This shift suggests that during the late 2010s, there was a notable clustering of years with higher than average peak counts. Although this upward movement is subtle, it breaks from the previous multi decade pattern of bounded variability. The fact that the rolling mean exceeds its historical range hints at a potential emerging signal of increased dynamical activity at 500 hPa, which could have downstream impacts on surface weather patterns. Even minor increases in the frequency of ridges and troughs can modulate storminess, precipitation extremes, and temperature variability in the NYC region, meaning that this change, while modest in absolute terms, warrants attention.</span>
+<span id="cb7-177"><a href="#cb7-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-178"><a href="#cb7-178" aria-hidden="true" tabindex="-1"></a><span class="fu"># Seasonal Analysis of Geopotential Height Peaks over NYC (1980–2021)</span></span>
+<span id="cb7-179"><a href="#cb7-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-180"><a href="#cb7-180" aria-hidden="true" tabindex="-1"></a>To better understand how upper-tropospheric dynamics may vary not just year to year, but within different times of the year, we separated the peaks by season. Examining trends by season can provide insight into whether particular parts of the year,are becoming more dynamically active. By grouping the detected peaks into seasonal categories and analyzing how the frequency of these peaks has changed over time, we can identify more nuanced patterns that annual summaries might obscure.</span>
+<span id="cb7-181"><a href="#cb7-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-184"><a href="#cb7-184" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb7-185"><a href="#cb7-185" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb7-186"><a href="#cb7-186" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-187"><a href="#cb7-187" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-188"><a href="#cb7-188" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> find_peaks</span>
+<span id="cb7-189"><a href="#cb7-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-190"><a href="#cb7-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-191"><a href="#cb7-191" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb7-192"><a href="#cb7-192" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb7-193"><a href="#cb7-193" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> [<span class="ss">f"hgt.</span><span class="sc">{</span>year<span class="sc">}</span><span class="ss">.nc"</span> <span class="cf">for</span> year <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1980</span>, <span class="dv">2022</span>)]</span>
+<span id="cb7-194"><a href="#cb7-194" aria-hidden="true" tabindex="-1"></a>ts_list <span class="op">=</span> []</span>
+<span id="cb7-195"><a href="#cb7-195" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_list:</span>
+<span id="cb7-196"><a href="#cb7-196" aria-hidden="true" tabindex="-1"></a>   ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb7-197"><a href="#cb7-197" aria-hidden="true" tabindex="-1"></a>   nyc_500hpa <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="fl">500.0</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb7-198"><a href="#cb7-198" aria-hidden="true" tabindex="-1"></a>   ts_list.append(nyc_500hpa)</span>
+<span id="cb7-199"><a href="#cb7-199" aria-hidden="true" tabindex="-1"></a>hgt_500_nyc <span class="op">=</span> xr.concat(ts_list, dim<span class="op">=</span><span class="st">"time"</span>)</span>
+<span id="cb7-200"><a href="#cb7-200" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> hgt_500_nyc.to_dataframe().reset_index()</span>
+<span id="cb7-201"><a href="#cb7-201" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"year"</span>] <span class="op">=</span> df[<span class="st">"time"</span>].dt.year</span>
+<span id="cb7-202"><a href="#cb7-202" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"month"</span>] <span class="op">=</span> df[<span class="st">"time"</span>].dt.month</span>
+<span id="cb7-203"><a href="#cb7-203" aria-hidden="true" tabindex="-1"></a>season_map <span class="op">=</span> {<span class="dv">12</span>: <span class="st">"Winter"</span>, <span class="dv">1</span>: <span class="st">"Winter"</span>, <span class="dv">2</span>: <span class="st">"Winter"</span>,</span>
+<span id="cb7-204"><a href="#cb7-204" aria-hidden="true" tabindex="-1"></a>             <span class="dv">3</span>: <span class="st">"Spring"</span>, <span class="dv">4</span>: <span class="st">"Spring"</span>, <span class="dv">5</span>: <span class="st">"Spring"</span>,</span>
+<span id="cb7-205"><a href="#cb7-205" aria-hidden="true" tabindex="-1"></a>             <span class="dv">6</span>: <span class="st">"Summer"</span>, <span class="dv">7</span>: <span class="st">"Summer"</span>, <span class="dv">8</span>: <span class="st">"Summer"</span>,</span>
+<span id="cb7-206"><a href="#cb7-206" aria-hidden="true" tabindex="-1"></a>             <span class="dv">9</span>: <span class="st">"Fall"</span>, <span class="dv">10</span>: <span class="st">"Fall"</span>, <span class="dv">11</span>: <span class="st">"Fall"</span>}</span>
+<span id="cb7-207"><a href="#cb7-207" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"season"</span>] <span class="op">=</span> df[<span class="st">"month"</span>].<span class="bu">map</span>(season_map)</span>
+<span id="cb7-208"><a href="#cb7-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-209"><a href="#cb7-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-210"><a href="#cb7-210" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">"hgt"</span>].values </span>
+<span id="cb7-211"><a href="#cb7-211" aria-hidden="true" tabindex="-1"></a>peaks, _ <span class="op">=</span> find_peaks(y, prominence<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb7-212"><a href="#cb7-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-213"><a href="#cb7-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-214"><a href="#cb7-214" aria-hidden="true" tabindex="-1"></a>df_peaks <span class="op">=</span> df.iloc[peaks].copy()</span>
+<span id="cb7-215"><a href="#cb7-215" aria-hidden="true" tabindex="-1"></a>df_peaks[<span class="st">"peak_intensity"</span>] <span class="op">=</span> df_peaks[<span class="st">"hgt"</span>]</span>
+<span id="cb7-216"><a href="#cb7-216" aria-hidden="true" tabindex="-1"></a>df_peaks <span class="op">=</span> df_peaks[[<span class="st">"time"</span>, <span class="st">"hgt"</span>, <span class="st">"peak_intensity"</span>, <span class="st">"year"</span>, <span class="st">"season"</span>]]</span>
+<span id="cb7-217"><a href="#cb7-217" aria-hidden="true" tabindex="-1"></a>peak_counts_seasonal <span class="op">=</span> df_peaks.groupby([<span class="st">"year"</span>, <span class="st">"season"</span>]).size().unstack()</span>
+<span id="cb7-218"><a href="#cb7-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-219"><a href="#cb7-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-220"><a href="#cb7-220" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb7-221"><a href="#cb7-221" aria-hidden="true" tabindex="-1"></a>peak_counts_seasonal.rolling(window<span class="op">=</span><span class="dv">5</span>, min_periods<span class="op">=</span><span class="dv">1</span>).mean().plot(marker<span class="op">=</span><span class="st">"o"</span>, linestyle<span class="op">=</span><span class="st">"-"</span>, ax<span class="op">=</span>plt.gca())</span>
+<span id="cb7-222"><a href="#cb7-222" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Seasonal Peak Frequency Trends (500 hPa Geopotential Height)"</span>)</span>
+<span id="cb7-223"><a href="#cb7-223" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb7-224"><a href="#cb7-224" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Number of Peaks"</span>)</span>
+<span id="cb7-225"><a href="#cb7-225" aria-hidden="true" tabindex="-1"></a>plt.legend(title<span class="op">=</span><span class="st">"Season"</span>)</span>
+<span id="cb7-226"><a href="#cb7-226" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb7-227"><a href="#cb7-227" aria-hidden="true" tabindex="-1"></a>plt.yticks(np.arange(<span class="dv">10</span>, <span class="dv">21</span>, <span class="dv">2</span>))</span>
+<span id="cb7-228"><a href="#cb7-228" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">10</span>, <span class="dv">21</span>)    </span>
+<span id="cb7-229"><a href="#cb7-229" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb7-230"><a href="#cb7-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-231"><a href="#cb7-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-232"><a href="#cb7-232" aria-hidden="true" tabindex="-1"></a>The figure displays the annual number of seasonal peaks in 500 hPa geopotential height over New York City from 1979 to 2021. Each line represents one season: Winter (red), Spring (orange), Summer (green), and Fall (blue).</span>
+<span id="cb7-233"><a href="#cb7-233" aria-hidden="true" tabindex="-1"></a>Winter consistently has the highest number of peaks each year, highlighting the season’s strong dynamical activity typically associated with more active weather patterns like storms and stronger jet streams. Fall follows closely behind, while Spring and Summer generally record fewer peaks, consistent with the relatively quieter atmospheric conditions expected in warmer months.</span>
+<span id="cb7-234"><a href="#cb7-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-235"><a href="#cb7-235" aria-hidden="true" tabindex="-1"></a>Notably, Spring shows a sharp decline in peak counts during the early 1980s, stabilizing at lower values thereafter. Winter displays some variability across the record, with slight increases in peak counts in the early 2000s and mid 2010s. Summer remains relatively steady over time, although there are small oscillations year to year. Fall shows more variability but tends to hover around a similar range throughout the period.</span>
+<span id="cb7-236"><a href="#cb7-236" aria-hidden="true" tabindex="-1"></a>Overall, while there is year to year variability, the seasonal patterns remain remarkably stable. However, subtle increases or decreases within seasons,especially Winter’s slight upward swings in more recent years,may signal emerging shifts in the behavior of upper-tropospheric dynamics over the region. While seasonal patterns of peak frequency have remained relatively consistent since 1980, small but noticeable fluctuations,particularly during Winter, highlight the importance of monitoring subtle changes in upper-tropospheric dynamics, as even modest shifts can influence local and regional weather variability over time.</span>
+<span id="cb7-237"><a href="#cb7-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-238"><a href="#cb7-238" aria-hidden="true" tabindex="-1"></a><span class="fu"># Identifying and Visualizing Extremes (top and bottom 5%) in 500 hPa Geopotential Height</span></span>
+<span id="cb7-239"><a href="#cb7-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-240"><a href="#cb7-240" aria-hidden="true" tabindex="-1"></a>When analyzing upper-tropospheric dynamics, it is crucial not only to understand the overall patterns but also to specifically highlight the most extreme events. By isolating the top and bottom 5% of weekly averaged 500 hPa geopotential height values, we can focus on the strongest ridging (extreme highs) and deepest troughing (extreme lows) over NYC.</span>
+<span id="cb7-241"><a href="#cb7-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-242"><a href="#cb7-242" aria-hidden="true" tabindex="-1"></a>This approach allows us to better capture and visualize the rare, high impact atmospheric configurations that may drive significant local weather events, such as heatwaves, cold snaps, and major storms. </span>
+<span id="cb7-243"><a href="#cb7-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-244"><a href="#cb7-244" aria-hidden="true" tabindex="-1"></a>Below, we apply this method to identify and plot these extreme events.</span>
+<span id="cb7-245"><a href="#cb7-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-248"><a href="#cb7-248" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb7-249"><a href="#cb7-249" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb7-250"><a href="#cb7-250" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-251"><a href="#cb7-251" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-252"><a href="#cb7-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-253"><a href="#cb7-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-254"><a href="#cb7-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-255"><a href="#cb7-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-256"><a href="#cb7-256" aria-hidden="true" tabindex="-1"></a>nyc_lat <span class="op">=</span> <span class="fl">40.7128</span></span>
+<span id="cb7-257"><a href="#cb7-257" aria-hidden="true" tabindex="-1"></a>nyc_lon <span class="op">=</span> <span class="fl">74.0060</span></span>
+<span id="cb7-258"><a href="#cb7-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-259"><a href="#cb7-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-260"><a href="#cb7-260" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> [<span class="ss">f"hgt.</span><span class="sc">{</span>year<span class="sc">}</span><span class="ss">.nc"</span> <span class="cf">for</span> year <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1980</span>, <span class="dv">2022</span>)]</span>
+<span id="cb7-261"><a href="#cb7-261" aria-hidden="true" tabindex="-1"></a>ts_list <span class="op">=</span> []</span>
+<span id="cb7-262"><a href="#cb7-262" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> file_list:</span>
+<span id="cb7-263"><a href="#cb7-263" aria-hidden="true" tabindex="-1"></a>   ds <span class="op">=</span> xr.open_dataset(<span class="bu">file</span>)</span>
+<span id="cb7-264"><a href="#cb7-264" aria-hidden="true" tabindex="-1"></a>   nyc_500hpa <span class="op">=</span> ds[<span class="st">'hgt'</span>].sel(lat<span class="op">=</span>nyc_lat, lon<span class="op">=</span>nyc_lon, level<span class="op">=</span><span class="fl">500.0</span>, method<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb7-265"><a href="#cb7-265" aria-hidden="true" tabindex="-1"></a>   ts_list.append(nyc_500hpa)</span>
+<span id="cb7-266"><a href="#cb7-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-267"><a href="#cb7-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-268"><a href="#cb7-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-269"><a href="#cb7-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-270"><a href="#cb7-270" aria-hidden="true" tabindex="-1"></a>hgt_500_nyc <span class="op">=</span> xr.concat(ts_list, dim<span class="op">=</span><span class="st">"time"</span>)</span>
+<span id="cb7-271"><a href="#cb7-271" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> hgt_500_nyc.to_dataframe().reset_index().set_index(<span class="st">"time"</span>)</span>
+<span id="cb7-272"><a href="#cb7-272" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.resample(<span class="st">"W"</span>).mean()</span>
+<span id="cb7-273"><a href="#cb7-273" aria-hidden="true" tabindex="-1"></a>upper_threshold <span class="op">=</span> np.percentile(df[<span class="st">"hgt"</span>], <span class="dv">95</span>) </span>
+<span id="cb7-274"><a href="#cb7-274" aria-hidden="true" tabindex="-1"></a>lower_threshold <span class="op">=</span> np.percentile(df[<span class="st">"hgt"</span>], <span class="dv">5</span>)</span>
+<span id="cb7-275"><a href="#cb7-275" aria-hidden="true" tabindex="-1"></a>extreme_highs <span class="op">=</span> df[df[<span class="st">"hgt"</span>] <span class="op">&gt;=</span> upper_threshold]</span>
+<span id="cb7-276"><a href="#cb7-276" aria-hidden="true" tabindex="-1"></a>extreme_lows <span class="op">=</span> df[df[<span class="st">"hgt"</span>] <span class="op">&lt;=</span> lower_threshold]</span>
+<span id="cb7-277"><a href="#cb7-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-278"><a href="#cb7-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-279"><a href="#cb7-279" aria-hidden="true" tabindex="-1"></a>plt.plot(df.index, df[<span class="st">"hgt"</span>], label<span class="op">=</span><span class="st">"500 hPa Geopotential Height"</span>, color<span class="op">=</span><span class="st">'blue'</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb7-280"><a href="#cb7-280" aria-hidden="true" tabindex="-1"></a>plt.scatter(extreme_highs.index, extreme_highs[<span class="st">"hgt"</span>], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">"Extreme Ridges (Top 5%)"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb7-281"><a href="#cb7-281" aria-hidden="true" tabindex="-1"></a>plt.scatter(extreme_lows.index, extreme_lows[<span class="st">"hgt"</span>], color<span class="op">=</span><span class="st">'black'</span>, label<span class="op">=</span><span class="st">"Extreme Troughs (Bottom 5%)"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb7-282"><a href="#cb7-282" aria-hidden="true" tabindex="-1"></a>plt.axhline(upper_threshold, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'dashed'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">"95th Percentile"</span>)</span>
+<span id="cb7-283"><a href="#cb7-283" aria-hidden="true" tabindex="-1"></a>plt.axhline(lower_threshold, color<span class="op">=</span><span class="st">'black'</span>, linestyle<span class="op">=</span><span class="st">'dashed'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">"5th Percentile"</span>)</span>
+<span id="cb7-284"><a href="#cb7-284" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb7-285"><a href="#cb7-285" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Geopotential Height (m)"</span>)</span>
+<span id="cb7-286"><a href="#cb7-286" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Extreme Events in 500 hPa Geopotential Height Over NYC"</span>)</span>
+<span id="cb7-287"><a href="#cb7-287" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb7-288"><a href="#cb7-288" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb7-289"><a href="#cb7-289" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb7-290"><a href="#cb7-290" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-291"><a href="#cb7-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-292"><a href="#cb7-292" aria-hidden="true" tabindex="-1"></a>The figure above shows the weekly averaged 500 hPa geopotential height over New York City from 1979 to 2021, highlighting the most extreme atmospheric events. The blue curve traces the natural week to week variability of the geopotential height field, giving us a sense of the background fluctuations in the upper-troposphere. Overlaid on this curve are two sets of highlighted points: the red dots represent the top 5% of weekly geopotential height values, corresponding to extreme ridging events, while the black dots capture the bottom 5% of values, signaling extreme troughing events. To better visualize where these extremes sit relative to the full distribution, we also include dashed lines marking the 95th percentile (in red) and the 5th percentile (in black).</span>
+<span id="cb7-293"><a href="#cb7-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-294"><a href="#cb7-294" aria-hidden="true" tabindex="-1"></a>This visualization allows us to isolate and study the most significant departures from typical conditions. By focusing on these extreme highs and lows, we can begin to uncover patterns associated with impactful weather events, such as heat waves linked to strong ridging or storms and cold air outbreaks associated with deep troughs. Identifying these extreme cases within the broader dataset provides a clearer lens for analyzing how the frequency and characteristics of extreme atmospheric conditions may have shifted over time, setting up the next steps in our analysis.</span>
+<span id="cb7-295"><a href="#cb7-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-296"><a href="#cb7-296" aria-hidden="true" tabindex="-1"></a><span class="fu"># Modeling Seasonal Cycles and Long Term Changes with Harmonic Regression</span></span>
+<span id="cb7-297"><a href="#cb7-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-298"><a href="#cb7-298" aria-hidden="true" tabindex="-1"></a>To better understand the underlying structure of the 500 hPa geopotential height variability over New York City, we turn to harmonic regression. I chose this approach because the atmosphere naturally exhibits strong periodic behavior, particularly tied to the seasons. The rise and fall of geopotential heights throughout the year are not random; they follow a predictable, wave like pattern that harmonic regression is specifically designed to capture. By fitting sine and cosine functions to our data, we can model the repeating annual cycle with precision while also detecting any shifts or trends that depart from this expected rhythm.</span>
+<span id="cb7-299"><a href="#cb7-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-300"><a href="#cb7-300" aria-hidden="true" tabindex="-1"></a>Harmonic regression is particularly well suited for our research goals because it allows us to separate the regular, seasonally driven variability from the less predictable anomalies. In other words, it helps us see both the forest and the trees: we can quantify the typical yearly cycle of the atmosphere while also tracking how the timing, amplitude, or baseline of that cycle might be changing over time. This separation is crucial for identifying subtle but important signals, such as the amplification or weakening of seasonal peaks, or the gradual rise or fall in mean geopotential heights that could hint at broader climatic shifts.</span>
+<span id="cb7-301"><a href="#cb7-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-302"><a href="#cb7-302" aria-hidden="true" tabindex="-1"></a>To build our model, we incorporated several key components. First, we included a constant and a linear trend term to account for any long term changes in the data, such as a steady increase or decrease in average geopotential height over the decades. Next, to capture the strong seasonal cycle, we used a set of Fourier terms, representing annual periodicity with multiple harmonics to allow flexibility in the shape of the seasonal pattern. Finally, we fit a Seasonal ARIMA model to the residuals, helping account for any remaining autocorrelation and further improving the accuracy of our forecasts. Together, this Dynamic Harmonic Regression framework provides a powerful way to model both the predictable seasonal patterns and the less predictable long term variations in the 500 hPa geopotential height field over NYC.</span>
+<span id="cb7-303"><a href="#cb7-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-304"><a href="#cb7-304" aria-hidden="true" tabindex="-1"></a>Once the Dynamic Harmonic Regression (DHR) model is fitted, we can visualize both the historical observations and the forecasted behavior of the 500 hPa geopotential height over New York City. In the resulting plot, the solid blue line represents the observed weekly averaged geopotential heights from 1979 to 2021. This line captures the familiar seasonal rhythm, rising and falling with the natural progression of the seasons, but also reveals subtle year to year variations.</span>
+<span id="cb7-305"><a href="#cb7-305" aria-hidden="true" tabindex="-1"></a>Overlaid on the observations is a red dashed line, which shows the forecast produced by our harmonic regression model. Extending five years beyond the end of our dataset, this forecast projects the expected seasonal behavior of geopotential heights based on the patterns learned from the historical record. The model’s strength lies in its ability to maintain the seasonal structure, the characteristic peaks and valleys, while allowing for gradual shifts in the baseline level or in the amplitude of the cycles.</span>
+<span id="cb7-306"><a href="#cb7-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-307"><a href="#cb7-307" aria-hidden="true" tabindex="-1"></a>By comparing the forecast to the historical data, we can assess not only the persistence of the seasonal cycle but also whether any underlying trends are projected to continue into the near future. For example, if the baseline of the forecast continues to rise, it would suggest that geopotential heights at 500 hPa over NYC are trending higher, a signal that could be associated with broader changes in atmospheric circulation patterns or warming related impacts. Alternatively, shifts in the amplitude or timing of the seasonal peaks could point to changing dynamics in the way the atmosphere transitions between seasons.</span>
+<span id="cb7-308"><a href="#cb7-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-309"><a href="#cb7-309" aria-hidden="true" tabindex="-1"></a>This visualization serves as both a check on our model’s performance, how well it reproduces past behavior, and as a tool for gaining insight into the future behavior of extreme events, seasonal cycles, and long term trends in the upper-troposphere over New York City.</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
