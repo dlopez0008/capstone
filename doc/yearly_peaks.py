@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 nyc_lat = 40.7128
 nyc_lon = 74.0060
 
-file_list = [f"hgt.{year}.nc" for year in range(1979, 2022)]
+file_list = [f"hgt.{year}.nc" for year in range(1980, 2022)]
 ts_list = []
 
 for file in file_list:
@@ -50,6 +50,8 @@ plt.ylabel("Number of Peaks")
 plt.title("Trend in Annual Count of Geopotential Height Peaks (500 hPa, NYC)")
 plt.legend()
 plt.grid()
+plt.yticks(np.arange(30, 65, 5)) 
+plt.ylim(30, 60)                  
 plt.show()
 
 slope = model.coef_[0]
