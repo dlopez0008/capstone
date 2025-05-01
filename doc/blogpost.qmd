@@ -14,6 +14,8 @@ format:
 jupyter: python3
 ---
 
+![Visualization](blogpost_image.jpeg)
+
 # Introduction
 
 Have you ever wondered what’s happening above when extreme weather strikes New York City? While we often look at surface temperatures or rainfall rates, the answer may lie 5.5 kilometers overhead, in the upper troposphere.
@@ -39,10 +41,13 @@ The data was first broken down year by year, capturing the unique atmospheric fi
 With the seasons, years, and decades carefully mapped out, the foundation was set for a closer look at how the upper atmosphere shapes NYC’s most extreme weather.
 
 # Analysis
+
 ```{python}
 import xarray as xr
-import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from scipy.signal import find_peaks
+import plotly.graph_objects as go
 
 file_names = [
    "hgt.1979.nc", "hgt.1980.nc", "hgt.1981.nc", "hgt.1982.nc", "hgt.1983.nc",
@@ -58,30 +63,69 @@ file_names = [
    "hgt.2021.nc"
 ]
 
-# NYC coordinates
 nyc_lat = 40.7128
 nyc_lon = 74.0060
 
+frames = []
+year_labels = []
+
 for file in file_names:
-   ds = xr.open_dataset(file)
-   nyc_series = ds['hgt'].sel(lat=nyc_lat, lon=nyc_lon, level=500, method='nearest')
-   hgt_values = nyc_series.values
+    year = int(file.split('.')[1])
+    ds = xr.open_dataset(file)
+    nyc_series = ds['hgt'].sel(lat=nyc_lat, lon=nyc_lon, level=500, method='nearest')
+    hgt_values = nyc_series.values
+    time = np.arange(len(hgt_values))
 
-   peaks, _ = find_peaks(hgt_values, distance=10)
-   troughs, _ = find_peaks(-hgt_values, distance=10)
+    peaks, _ = find_peaks(hgt_values, distance=10)
+    troughs, _ = find_peaks(-hgt_values, distance=10)
 
-   plt.figure(figsize=(10, 4))
-   plt.plot(hgt_values, label="Geopotential Height (500 mb)")
-   plt.scatter(peaks, hgt_values[peaks], color='red', label="Ridges (Peaks)")
-   plt.scatter(troughs, hgt_values[troughs], color='blue', label="Troughs (Valleys)")
-   plt.title(f"Geopotential Height at 500 mb for NYC ({file.split('.')[1]})")
-   plt.xlabel("Time (Days)")
-   plt.ylabel("Geopotential Height (m)")
-   plt.legend()
-   plt.show()
+    frame = go.Frame(
+        data=[
+            go.Scatter(x=time, y=hgt_values, mode='lines', name='Height'),
+            go.Scatter(x=peaks, y=hgt_values[peaks], mode='markers',
+                       marker=dict(color='red', size=6), name='Ridges'),
+            go.Scatter(x=troughs, y=hgt_values[troughs], mode='markers',
+                       marker=dict(color='blue', size=6), name='Troughs'),
+        ],
+        name=str(year)
+    )
 
-   ds.close()
+    frames.append(frame)
+    ds.close()
+first_frame = frames[0].data
+
+fig = go.Figure(
+    data=first_frame,
+    layout=go.Layout(
+        title="Geopotential Height at 500 mb for NYC (Animated)",
+        xaxis=dict(title="Time (Days)"),
+        yaxis=dict(title="Geopotential Height (m)"),
+        updatemenus=[dict(
+            type="buttons",
+            showactive=False,
+            buttons=[
+                dict(label="Play", method="animate", args=[None]),
+                dict(label="Pause", method="animate", args=[[None], {"mode": "immediate", "frame": {"duration": 0, "redraw": False}, "transition": {"duration": 0}}]),
+            ]
+        )]
+    ),
+    frames=frames
+)
+fig.update_layout(
+    sliders=[dict(
+        steps=[dict(method="animate", args=[[f.name], {"mode": "immediate", "frame": {"duration": 500, "redraw": True}, "transition": {"duration": 0}}], label=f.name)
+               for f in frames],
+        transition={"duration": 0},
+        x=0.1,
+        xanchor="left",
+        y=0,
+        yanchor="top"
+    )]
+)
+
+fig.show()
 ```
+
 
 Before diving into long term trends or seasonal composites, it was important to first get a clear sense of how ridges and troughs appeared in the raw data itself.
 
