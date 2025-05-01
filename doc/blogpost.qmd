@@ -39,7 +39,6 @@ The data was first broken down year by year, capturing the unique atmospheric fi
 With the seasons, years, and decades carefully mapped out, the foundation was set for a closer look at how the upper atmosphere shapes NYC’s most extreme weather.
 
 # Analysis
-
 ```{python}
 import xarray as xr
 import matplotlib.pyplot as plt
@@ -297,3 +296,20 @@ Overlaid on the observations is a red dashed line, which shows the forecast prod
 By comparing the forecast to the historical data, we can assess not only the persistence of the seasonal cycle but also whether any underlying trends are projected to continue into the near future. For example, if the baseline of the forecast continues to rise, it would suggest that geopotential heights at 500 hPa over NYC are trending higher, a signal that could be associated with broader changes in atmospheric circulation patterns or warming related impacts. Alternatively, shifts in the amplitude or timing of the seasonal peaks could point to changing dynamics in the way the atmosphere transitions between seasons.
 
 This visualization serves as both a check on our model’s performance, how well it reproduces past behavior, and as a tool for gaining insight into the future behavior of extreme events, seasonal cycles, and long term trends in the upper-troposphere over New York City.
+
+Image here for DHR model 
+
+
+# Future Work
+
+One key avenue for future research is to expand the geographic scope of this study beyond New York City. By applying the same peak detection and harmonic regression techniques to other major metropolitan areas, we can investigate whether similar patterns of upper-tropospheric variability and corresponding extremes are emerging elsewhere.
+
+Another important step will be a comparative analysis of extreme geopotential height anomalies across different climate zones. This will help reveal regional differences in ridge and trough behavior, and may identify areas where high altitude circulation changes are more pronounced.
+
+A deeper dive into the dynamics of ridge and trough migration is also planned. Tracking how the mean latitude and longitude of these features shift over time will shed light on whether the atmospheric “highways” themselves are drifting, potentially altering the pathways of storms and heatwaves.
+
+Finally, integrating additional atmospheric variables such as humidity, temperature advection, and jet stream intensity will allow us to build a more complete picture of the drivers behind extreme events. Coupling these insights with surface impacts such as precipitation extremes, and heatwave duration will strengthen our understanding of how upper-tropospheric changes translate into on the ground weather hazards.
+
+# References
+
+1. NOAA Physical Sciences Laboratory. *NCEP/NCAR Reanalysis 1 Data*. NOAA PSL. Retrieved April 2025, from https://psl.noaa.gov/data/gridded/data.ncep.html
