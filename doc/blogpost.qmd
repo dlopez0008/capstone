@@ -14,7 +14,7 @@ format:
 jupyter: python3
 ---
 
-![Visualization](blogpost_image.jpeg)
+![](blogpost_image.jpeg)
 
 # Introduction
 
@@ -26,15 +26,15 @@ The hidden rhythms of the atmosphere reveal themselves through sweeping patterns
 
 Capturing the story of the atmosphere requires looking high above the skyline, where patterns at the 500 hPa level quietly shape the weather we experience below. 
 
-To piece together this story, I worked with daily geopotential height data spanning from 1979 to 2021, a time frame long enough to reveal both subtle shifts and dramatic changes. I focused specifically on the grid point closest to New York City’s latitude and longitude, zeroing in on the atmospheric fingerprints left above the city through heatwaves, storms, and droughts. 
+To piece together this story, I worked with daily geopotential height data spanning from 1979 to 2021, a time frame long enough to reveal both subtle shifts and dramatic changes. I focused specifically on the grid point closest to New York City’s latitude and longitude
 
-With this long, continuous record, it became possible to trace the rising and falling of ridges and troughs over decades, offering a detailed glimpse into how the atmosphere’s high-altitude patterns have evolved alongside the city they influence.
+With this long, continuous record, it became possible to trace the rising and falling of ridges and troughs over decades, offering a detailed glimpse into how the atmosphere’s high-altitude patterns may have evolved. 
 
 # The Method
 
 Revealing the patterns hidden high above New York City started with organizing decades of atmospheric data into a form that could be carefully explored. 
 
-Using Python tools like `xarray` and `pandas`, I gathered daily geopotential height values at the 500 hPa level from 1979 to 2024, focusing on the grid point closest to NYC’s coordinates.
+Using Python tools like `xarray` and `pandas`, I gathered daily geopotential height values at the 500 hPa level from 1979 to 2021.
 
 The data was first broken down year by year, capturing the unique atmospheric fingerprint of each calendar year. From there, it was organized decade by decade to trace broader shifts across longer timescales. To dig even deeper, each year was further separated season by season, Spring, Summer, Fall, and Winter, making it possible to observe how the behavior of ridges and troughs evolved not only over decades, but also within the natural flow of each year.
 
