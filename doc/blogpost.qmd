@@ -353,8 +353,18 @@ plt.axhline(lower_threshold, color='black', linestyle='dashed', alpha=0.7, label
 plt.xlabel("Year")
 plt.ylabel("Geopotential Height (m)")
 plt.title("Extreme Events in 500 hPa Geopotential Height Over NYC")
-plt.legend()
-plt.grid()
+plt.legend(
+    title="Legend",
+    fontsize=6,
+    title_fontsize=8,
+    loc='center left',
+    bbox_to_anchor=(1.02, 0.5),
+    borderaxespad=0,
+    frameon=True
+)
+
+plt.grid(True)
+plt.tight_layout()  
 plt.show()
 ```
 
