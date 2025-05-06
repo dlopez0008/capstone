@@ -19,34 +19,31 @@ NOAA. Unsplash. Published on July 3, 2019. from https://unsplash.com/photos/ligh
 
 # Introduction
 
-Have you ever wondered what’s happening above when extreme weather strikes New York City? While we often look at surface temperatures or rainfall rates, the answer may lie kilometers overhead, in the upper troposphere.
+What drives extreme weather in New York City? While we often focus on surface level conditions, many of these events are influenced by patterns high in the atmosphere specifically at the 500 hPa level, where the air pressure is about half of what it is at sea level.
 
-The hidden rhythms of the atmosphere reveal themselves through sweeping patterns of upper-tropospheric circulation, particularly at the 500 hPa level. At this height air pressure is roughly half of that on the surface. Weather systems become more clearly organized and less affected by ground level friction. Meteorologists often study the 500 hPa level to track large scale features such as troughs and ridges, which steer the jet stream and play a crucial role in shaping weather on the ground. Troughs represent dips in the atmospheric flow and are commonly associated with stormy, unsettled conditions, while ridges represent upward bumps that bring dry, calm weather and in some cases, extreme heat.
+The 500 hPa level is a standard reference point in meteorology, typically found around 5.5 kilometers above the surface. In this context, hPa stands for hectopascals, a unit of pressure used to describe atmospheric layers. Air pressure decreases with altitude, and the 500 hPa level represents the point where the pressure is about half that at sea level. Rather than measuring altitude directly, meteorologists use geopotential height, which indicates the elevation at which a specific pressure level, like 500 hPa occurs. This value reflects both the atmospheric pressure and the temperature of the air column beneath it: warmer air causes expansion, higher geopotential height, while cooler air compresses the column ,lower height. Meteorologists analyze the 500 hPa layer to detect troughs and ridges, key features that influence storm tracks, jet streams, and regional weather. Troughs indicate areas of lower geopotential height, often linked to cooler, stormy weather. Ridges are marked by higher geopotential height, usually signal stable, warmer conditions and can intensify heatwaves.
 
-To investigate these patterns, the project uses daily data from the NOAA-CIRES 20th Century Reanalysis Version 3 dataset. The dataset allows us to explore long term trends and variability in geopotential height which is an essential metric that reflects the height at which a given pressure level such as 500 hPa occurs and provides insight into the structure of the atmosphere.
-
-By examining decades of data between 1979 and 2021, I aim to understand how the location and intensity of ridges and troughs over New York City have changed and how those shifts are linked to extreme weather events, such as heatwaves, heavy rainfall, and droughts. This research not only deepens our understanding of atmospheric dynamics but also contributes to efforts in climate resilience, public safety, and long-term forecasting.
+This project uses daily data from the NOAA-CIRES 20th Century Reanalysis Version 3 to examine changes in the position and strength of these features over New York City from 1979 to 2021. The focus is on how these shifts correlate with extreme weather—such as heatwaves, heavy precipitation, and droughts. Understanding these dynamics supports climate resilience and better preparedness for future events.
 
 # The Dataset
 
-Capturing the story of the atmosphere requires looking high above the skyline, where patterns at the 500 hPa level quietly shape the weather we experience below. 
+To investigate how upper-tropospheric patterns affect extreme weather in New York City, this project uses data from the NOAA-CIRES 20th Century Reanalysis II . The Reanalysis II dataset originates from the NCEP/NCAR Reanalysis 1 project, a collaborative effort between NOAA's National Centers for Environmental Prediction (NCEP) and the National Center for Atmospheric Research (NCAR). The Reanalysis II dataset provides a globally complete and physically consistent reconstruction of the atmosphere, extending from 1979 to the present.
 
-To piece together this story, I worked with daily geopotential height data spanning from 1979 to 2021, a time frame long enough to reveal both subtle shifts and dramatic changes. I focused specifically on the grid point closest to New York City’s latitude and longitude (40° N, 75° W). 
+The dataset is produced by assimilating historical surface pressure observations from ships, land stations, and buoys into a modern numerical weather prediction model using an advanced statistical approach known as the [Ensemble Kalman Filter](https://doi.org/10.1002/qj.776). The model then uses a physics based equations to infer the state of the atmosphere at various altitudes and times, including the 500 hPa level, providing estimates for geopotential height and other variables over time and space.
 
-The dataset utilized in this analysis originates from the NCEP/NCAR Reanalysis 1 project, a collaborative effort between NOAA's National Centers for Environmental Prediction (NCEP) and the National Center for Atmospheric Research (NCAR). This reanalysis project employs a consistent data assimilation system to integrate a wide array of historical atmospheric observations such as those from weather balloons, aircraft, ships, satellites, and surface stations into a comprehensive global model. By assimilating these diverse data sources using the same model throughout the entire period, the reanalysis provides a coherent and continuous record of atmospheric conditions from 1948 to the present. This project focuses on the Reanalysis II Project dataset which spans from 1979 to present. The reanalysis II dataset builds on its previous model with a more advanced model. 
-
-With this long, continuous record, it became possible to trace the rising and falling of ridges and troughs over decades, offering a detailed glimpse into how the atmosphere’s high altitude patterns may have evolved. 
+This project specifically focuses on daily 500 hPa geopotential height data from 1979 to 2021, concentrating on the grid point closest to New York City. This time frame captures several decades of atmospheric behavior, making it possible to assess long-term variability and emerging trends.
 
 # Methodology
 
 Using Python tools like `xarray` and `pandas`, I gathered daily geopotential height values at the 500 hPa level from 1979 to 2021.
 
-To examine the behavior of upper-tropospheric circulation over New York City, we analyzed daily 500 hPa geopotential height data from 1979 to 2021, using the NOAA-CIRES 20th Century Reanalysis (Version 3) dataset. We extracted data from the grid point closest to NYC’s coordinates (40° N, 75° W) to build a continuous time series of atmospheric heights at the 500 hPa pressure level.
+To examine the behavior of upper-tropospheric circulation over New York City, we analyzed daily 500 hPa geopotential height data from 1979 to 2021, using the NOAA-CIRES 20th Century Reanalysis II dataset. We extracted data from the grid point closest to NYC’s coordinates (40° N, 75° W) to build a continuous time series of atmospheric heights at the 500 hPa pressure level.
 
 To detect the presence of ridges and troughs, which are critical for understanding large-scale weather patterns, I applied a peak detection algorithm using Python’s scipy.signal.find_peaks function. This method identifies local maxima (ridges) and minima (troughs) within a time series based on shape characteristics such as prominence and distance. By analyzing the oscillating pattern of geopotential height values, we detected local maximas and minimas at regular intervals. We used a minimum peak distance of 10 days to reduce noise and avoid false detections caused by short term fluctuations.
 The find_peaks algorithm works by scanning the time series to find points that are higher than their neighboring values, optionally applying conditions like minimum prominence or separation distance. This allows it to isolate meaningful highs and lows in the atmospheric pressure field that correspond to dynamic ridging and troughing patterns in the upper troposphere (Virtanen et al., 2020).
 
 In addition to detecting peaks, we integrated seasonal analysis to examine whether the frequency of ridge events varied across different parts of the year. Each date in the time series was categorized into one of four seasons: Winter (Dec–Feb), Spring (Mar–May), Summer (Jun–Aug), and Fall (Sep–Nov). Once the peaks were identified, we grouped them by both year and season, allowing us to track seasonal changes in peak frequency over time.
+
 We then visualized the number of seasonal peaks for each year to highlight underlying trends. This allowed us to assess how often NYC experiences pronounced events in each season, and whether those patterns are changing over time, potentially influencing seasonal weather extremes like heat waves or storms.
 
 To further isolate extreme atmospheric events, we computed the 95th percentile and 5th percentile thresholds of geopotential height values across the entire dataset. Days with geopotential heights above the 95th percentile were classified as extreme ridge events, often associated with strong upper level high pressure systems and potential heatwaves. Conversely, days below the 5th percentile were labeled as extreme trough events, commonly linked to deep low pressure systems, which can bring heavy rainfall or cold air outbreaks. This percentile based approach allowed us to focus on the most significant atmospheric anomalies, providing a robust framework for analyzing the relationship between upper tropospheric circulation and extreme surface weather.
@@ -140,8 +137,8 @@ fig.show()
 
 Before diving into long term trends or seasonal composites, it was important to first get a clear sense of how ridges and troughs appeared in the raw data itself.
 
-Using Python, I loaded each year's data file, spanning from 1979 to 2021, and isolated the grid point closest to NYC’s coordinates (approximately 40.7°N, 74.0°W) at the 500 hPa level.
-For every year, I extracted the time series of daily geopotential height values, providing a day by day view of how the atmosphere's "pressure surface" moved up and down over the city.
+Using Python, I loaded each year's data file, spanning from 1979 to 2021, and isolated the grid point closest to NYC’s coordinates at the 500 hPa level.
+For every year, I extracted the time series of daily geopotential height values, providing a day by day view of how the geopotential height moved up and down over the city.
 
 To identify key moments when the atmosphere formed strong ridges or deep troughs, I used a simple peak finding algorithm. Peaks in the data corresponded to atmospheric ridges (linked to heatwaves and calmer weather), while troughs indicated dips in the height field (often connected to storms and unsettled weather).
 
@@ -389,8 +386,7 @@ By comparing the forecast to the historical data, we can assess not only the per
 
 This visualization serves as both a check on our model’s performance, how well it reproduces past behavior, and as a tool for gaining insight into the future behavior of extreme events, seasonal cycles, and long term trends in the upper-troposphere over New York City.
 
-Image here for DHR model 
-
+![](HarmonicRegression.png)
 
 # Future Work
 
@@ -408,3 +404,4 @@ Finally, integrating additional atmospheric variables such as humidity, temperat
 2. Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., Carey, C. J., Polat, İ., Feng, Y., Moore, E. W., VanderPlas, J., Laxalde, D., Perktold, J., Cimrman, R., Henriksen, I., Quintero, E. A., Harris, C. R., Archibald, A. M., Ribeiro, A. H., Pedregosa, F., & van Mulbregt, P. SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. Nature Methods, 17(3), 261–272. Retrieved April 2025, from https://doi.org/10.1038/s41592-019-0686-2
 3. Seabold, S., & Perktold, J. (2010). Statsmodels: Econometric and Statistical Modeling with Python. Proceedings of the 9th Python in Science Conference, Austin, TX, 92–96. https://doi.org/10.25080/Majora-92bf1922-011
 4. YouTube. December 15, 2023. Dynamic Harmonic Regression For Time Series Forecasting. YouTube. https://www.youtube.com/watch?v=Zgcry0SPUY8
+5. Compo, G. P., Whitaker, J. S., Sardeshmukh, P. D., Matsui, N., Allan, R. J., Yin, X., Gleason, B. E., Vose, R. S., Rutledge, G., Bessemoulin, P., Brönnimann, S., Brunet, M., Crouthamel, R. I., Grant, A. N., Groisman, P. Y., Jones, P. D., Kruk, M. C., Kruger, A. C., Marshall, G. J., Worley, S. J. (2011). The Twentieth Century Reanalysis Project. Quarterly Journal of the Royal Meteorological Society, 137(654), 1–28. https://doi.org/10.1002/qj.776
