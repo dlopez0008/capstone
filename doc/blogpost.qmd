@@ -21,23 +21,25 @@ NOAA. Unsplash. Published on July 3, 2019. from https://unsplash.com/photos/ligh
 
 What drives extreme weather in New York City? While we often focus on surface level conditions, many of these events are influenced by patterns high in the atmosphere specifically at the 500 hPa level, where the air pressure is about half of what it is at sea level.
 
-The 500 hPa level is a standard reference point in meteorology, typically found around 5.5 kilometers above the surface. In this context, hPa stands for hectopascals, a unit of pressure used to describe atmospheric layers. Air pressure decreases with altitude, and the 500 hPa level represents the point where the pressure is about half that at sea level. Rather than measuring altitude directly, meteorologists use geopotential height, which indicates the elevation at which a specific pressure level, like 500 hPa occurs. This value reflects both the atmospheric pressure and the temperature of the air column beneath it: warmer air causes expansion, higher geopotential height, while cooler air compresses the column ,lower height. Meteorologists analyze the 500 hPa layer to detect troughs and ridges, key features that influence storm tracks, jet streams, and regional weather. Troughs indicate areas of lower geopotential height, often linked to cooler, stormy weather. Ridges are marked by higher geopotential height, usually signal stable, warmer conditions and can intensify heatwaves.
+The 500 hPa level is a standard reference point in meteorology, typically found around 5.5 kilometers above the surface. In this context, hPa stands for hectopascals, a unit of pressure used to describe atmospheric layers. Air pressure decreases with altitude, and the 500 hPa level represents the point where the pressure is about half that at sea level. Rather than measuring altitude directly, meteorologists use geopotential height, which indicates the elevation at which a specific pressure level, like 500 hPa occurs. This value reflects both the atmospheric pressure and the temperature of the air column beneath it, warmer air causes expansion, higher geopotential height, while cooler air compresses the column ,lower height. Meteorologists analyze the 500 hPa layer to detect troughs and ridges, key features that influence storm tracks, jet streams, and regional weather. Troughs indicate areas of lower geopotential height, often linked to cooler, stormy weather. Ridges are marked by higher geopotential height, usually signal stable, warmer conditions and can intensify heatwaves.
 
-This project uses daily data from the NOAA-CIRES 20th Century Reanalysis Version 3 to examine changes in the position and strength of these features over New York City from 1979 to 2021. The focus is on how these shifts correlate with extreme weather—such as heatwaves, heavy precipitation, and droughts. Understanding these dynamics supports climate resilience and better preparedness for future events.
+This project uses daily data from the NOAA-CIRES 20th Century Reanalysis II to examine changes in the position and strength of these features over New York City from 1979 to 2021. The focus is on how these shifts correlate with extreme weather, such as heatwaves, heavy precipitation, and droughts. Understanding these dynamics supports climate resilience and better preparedness for future events.
 
 # The Dataset
 
-To investigate how upper-tropospheric patterns affect extreme weather in New York City, this project uses data from the NOAA-CIRES 20th Century Reanalysis II . The Reanalysis II dataset originates from the NCEP/NCAR Reanalysis 1 project, a collaborative effort between NOAA's National Centers for Environmental Prediction (NCEP) and the National Center for Atmospheric Research (NCAR). The Reanalysis II dataset provides a globally complete and physically consistent reconstruction of the atmosphere, extending from 1979 to the present.
+To investigate how upper-tropospheric patterns affect extreme weather in New York City, this project uses data from the NOAA-CIRES 20th Century Reanalysis II . The Reanalysis II dataset originates from the NCEP/NCAR Reanalysis I project, a collaborative effort between NOAA's National Centers for Environmental Prediction (NCEP) and the National Center for Atmospheric Research (NCAR). The Reanalysis II dataset provides a globally complete and physically consistent reconstruction of the atmosphere, extending from 1979 to the present.
 
 The dataset is produced by assimilating historical surface pressure observations from ships, land stations, and buoys into a modern numerical weather prediction model using an advanced statistical approach known as the [Ensemble Kalman Filter](https://doi.org/10.1002/qj.776). The model then uses a physics based equations to infer the state of the atmosphere at various altitudes and times, including the 500 hPa level, providing estimates for geopotential height and other variables over time and space.
 
-This project specifically focuses on daily 500 hPa geopotential height data from 1979 to 2021, concentrating on the grid point closest to New York City. This time frame captures several decades of atmospheric behavior, making it possible to assess long-term variability and emerging trends.
+This project specifically focuses on daily 500 hPa geopotential height data from 1979 to 2021, concentrating on the grid point closest to New York City (40° N, 75° W). This time frame captures several decades of atmospheric behavior, making it possible to assess long term variability and emerging trends.
 
 # Methodology
 
-Using Python tools like `xarray` and `pandas`, I gathered daily geopotential height values at the 500 hPa level from 1979 to 2021.
+This project seeks to answer two primary research questions:
+1. Has the variability of upper-tropospheric ridges and troughs changed over time?
+2. Can changes in ridges and troughs be linked to extreme weather events in New York City?
 
-To examine the behavior of upper-tropospheric circulation over New York City, we analyzed daily 500 hPa geopotential height data from 1979 to 2021, using the NOAA-CIRES 20th Century Reanalysis II dataset. We extracted data from the grid point closest to NYC’s coordinates (40° N, 75° W) to build a continuous time series of atmospheric heights at the 500 hPa pressure level.
+Using Python tools like `xarray` and `pandas`, I gathered daily geopotential height values at the 500 hPa level from 1979 to 2021. We extracted data from the grid point closest to NYC’s coordinates (40° N, 75° W) to build a continuous time series of atmospheric heights at the 500 hPa pressure level.
 
 To detect the presence of ridges and troughs, which are critical for understanding large scale weather patterns, I applied a peak detection algorithm using Python’s scipy.signal.find_peaks function. This method identifies local maxima (ridges) and minima (troughs) within a time series based on shape characteristics such as prominence and distance. By analyzing the oscillating pattern of geopotential height values, we detected local maximas and minimas at regular intervals. We used a minimum peak distance of 10 days to reduce noise and avoid false detections caused by short term fluctuations.
 The find_peaks algorithm works by scanning the time series to find points that are higher than their neighboring values, optionally applying conditions like minimum prominence or separation distance. This allows it to isolate meaningful highs and lows in the atmospheric pressure field that correspond to dynamic ridging and troughing patterns in the upper troposphere (Virtanen et al., 2020).
@@ -77,6 +79,7 @@ nyc_lon = 74.0060
 frames = []
 year_labels = []
 
+# loops through the files
 for file in file_names:
     year = int(file.split('.')[1])
     ds = xr.open_dataset(file)
@@ -101,11 +104,11 @@ for file in file_names:
     frames.append(frame)
     ds.close()
 first_frame = frames[0].data
-
+# starting here a lot of this code was taken from reference 6 in References section
 fig = go.Figure(
     data=first_frame,
     layout=go.Layout(
-        title="Geopotential Height at 500 mb for NYC (Animated)",
+        title="Geopotential Height at 500 mb for NYC Over The Years",
         xaxis=dict(title="Time (Days)"),
         yaxis=dict(title="Geopotential Height (m)"),
         updatemenus=[dict(
@@ -136,26 +139,23 @@ fig.show()
 
 
 
-Before diving into long term trends or seasonal composites, it was important to first get a clear sense of how ridges and troughs appeared in the raw data itself.
+Before diving into long term trends or seasonal composites, it was important to first get a clear sense of how ridges and troughs appeared in the raw data itself. Using Python, I loaded each year's data file, spanning from 1979 to 2021, and isolated the grid point closest to NYC’s coordinates at the 500 hPa level. For every year, I extracted the time series of daily geopotential height values, providing a day by day view of how the geopotential height moved up and down over the city.
 
-Using Python, I loaded each year's data file, spanning from 1979 to 2021, and isolated the grid point closest to NYC’s coordinates at the 500 hPa level.
-For every year, I extracted the time series of daily geopotential height values, providing a day by day view of how the geopotential height moved up and down over the city.
+To identify key moments when the atmosphere formed ridges or troughs, I used a peak finding algorithm, Python’s scipy.signal.find_peaks function. Peaks in the geopotential height corresponded to ridges, while troughs indicated dips in geopotential height. 
 
-To identify key moments when the atmosphere formed strong ridges or deep troughs, I used a peak finding algorithm, Python’s scipy.signal.find_peaks function. Peaks in the geopotential height corresponded to ridges, while troughs indicated dips in geopotential height. 
+By plotting each year individually and marking the detected peaks and troughs, it became possible to visually confirm the natural variability in NYC’s upper-troposphere conditions. These plots provided an essential first step, establishing a clear baseline of how ridges and troughs appeared in the daily data before moving into deeper, more structured analysis.
 
-By plotting each year individually and marking the detected peaks and troughs, it became possible to visually confirm the natural variability in NYC’s upper-atmospheric conditions. These plots provided an essential first step, establishing a clear baseline of how ridges and troughs appeared in the daily data before moving into deeper, more structured seasonal and decadal analysis.
+## Frequency of Ridges and Troughs Over Time
 
-## Tracking Changes in Peak Frequency Over Time
+After confirming how ridges and troughs appeared in the daily data, the next step was to look at how often strong upper-tropospheric features, both ridges and troughs were forming each year, and whether that frequency had shifted over time.
 
-After confirming how ridges and troughs appeared in the daily data, the next step was to look at the bigger picture, how often strong upper-tropospheric features, both ridges and troughs were forming each year, and whether that frequency had shifted over time.
+To do this, I combined the daily geopotential height data for NYC from 1980 to 2021 into one continuous time series. Using the same peak detection method used previously, I identified all days when the 500 hPa geopotential height rose or dipped significantly relative to the mean, capturing both atmospheric ridges (highs) and troughs (lows).
 
-To do this, I combined the daily geopotential height data for NYC from 1980 to 2021 into one continuous time series. Using a peak detection method, I identified all days when the 500 hPa geopotential height rose or dipped significantly relative to the mean, capturing both atmospheric ridges (highs) and troughs (lows).
-
-Once the peaks were detected, I counted the total number each year. This provided a simple but powerful measure, the annual count of prominent atmospheric waves impacting NYC.
+Once the peaks were detected, I counted the total number each year. This provided the annual count of Ridges and Troughs for each year between 1980 and 2021.
 
 From there, I fit a linear trend to the yearly counts to see if there was a clear long term pattern, whether the number of large scale features was increasing, decreasing, or holding steady over time. To smooth out short term ups and downs, I also calculated a five year rolling average.
 
-Plotting all of this together, the raw yearly counts, the trend line, and the rolling average revealed important first insights into how the upper atmosphere’s day to day variability over NYC has evolved across recent decades. This step helped bridge the gap between individual daily events and longer term atmospheric behavior.
+Plotting all of this together, the yearly counts, the trend line, and the rolling average revealed important first insights into how the upper atmosphere’s variability over NYC has evolved across recent decades. 
 
 ```{python}
 import xarray as xr
@@ -212,15 +212,15 @@ plt.show()
 
 ```
 
-The figure above shows how the total number of significant geopotential height peaks (both ridges and troughs) at 500 hPa over New York City varied each year from 1980 through 2021. Overall, the plot reveals considerable year to year variability in the number of peaks, with annual totals generally fluctuating between about 35 and 50 peaks per year. Some years exhibit sharper increases or decreases compared to surrounding years, highlighting the natural atmospheric variability that can occur on annual timescales. This variability may reflect influences from broader climate patterns such as the El Niño–Southern Oscillation (ENSO) or the North Atlantic Oscillation (NAO), but also a large degree of random, chaotic behavior inherent to the mid-latitude atmosphere.
+The figure above shows how the total number of both ridges and troughs at 500 hPa over New York City varied each year from 1980 through 2021. Overall, the plot reveals considerable year to year variability in the number of peaks, with annual totals generally fluctuating between about 35 and 50 peaks per year. Some years exhibit sharper increases or decreases compared to surrounding years, highlighting the natural atmospheric variability that can occur on annual timescales. This variability may reflect influences from broader climate patterns such as the El Niño–Southern Oscillation (ENSO) or the North Atlantic Oscillation (NAO), but also a large degree of random, chaotic behavior in weather patterns.
 
-Despite the strong fluctuations from year to year, the linear trend line fitted through the data (shown as a dashed blue line) does reveal a slight positive slope, indicating a minimal upward trend in peak frequency. Although the increase appears small, it is important to recognize that even subtle changes in the behavior of upper-tropospheric circulation can have significant impacts. A slight rise in the number of disturbances could potentially lead to more frequent weather disruptions at the surface, such as shifts in storm tracks, changes in precipitation patterns, or more episodes of extreme weather affecting the NYC region.
+Despite the strong fluctuations from year to year, the linear trend line fitted through the data, shown as a dashed blue line, does reveal a slight positive slope, indicating a minimal upward trend in peak frequency. Although the increase appears small, it is important to recognize that even subtle changes in the behavior of upper-tropospheric circulation can have significant impacts. A slight rise in the number of disturbances could potentially lead to more frequent weather disruptions at the surface, such as shifts in storm tracks, changes in precipitation patterns, or more episodes of extreme weather affecting the NYC region.
 
-A closer inspection of the five year rolling average reveals an important feature beginning around 2018. For much of the record, the rolling average remained fairly constrained between approximately 40 and 45 peaks per year, underscoring the relative stability of annual upper-tropospheric dynamical activity over New York City. However, around 2018, the five year rolling average crosses above 45 for the first time in the dataset. This shift suggests that during the late 2010s, there was a notable clustering of years with higher than average peak counts. Although this upward movement is subtle, it breaks from the previous multi decade pattern of bounded variability. The fact that the rolling mean exceeds its historical range hints at a potential emerging signal of increased dynamical activity at 500 hPa, which could have downstream impacts on surface weather patterns. Even minor increases in the frequency of ridges and troughs can modulate storminess, precipitation extremes, and temperature variability in the NYC region, meaning that this change, while modest in absolute terms, warrants attention.
+A closer inspection of the five year rolling average reveals an important feature beginning around 2018. For much of the record, the rolling average remained fairly constrained between approximately 40 and 45 peaks per year. However, around 2018, the five year rolling average crosses above 45 for the first time in the dataset. This shift suggests that during the late 2010s, there was a notable clustering of years with higher than average peak counts. Although this upward movement is subtle, it breaks from the previous multi decade pattern of bounded variability. The fact that the rolling mean exceeds its historical range hints at a potential emerging signal of increased dynamical activity at 500 hPa, which could have downstream impacts on surface weather patterns. Even minor increases in the frequency of ridges and troughs can modulate storminess, precipitation extremes, and temperature variability in the NYC region, meaning that this change, while modest in absolute terms, warrants attention.
 
-## Seasonal Analysis of Geopotential Height Peaks over NYC (1980–2021)
+## Seasonal Analysis of Ridges and Troughs
 
-To better understand how upper-tropospheric dynamics may vary not just year to year, but within different times of the year, we separated the peaks by season. Examining trends by season can provide insight into whether particular parts of the year,are becoming more dynamically active. By grouping the detected peaks into seasonal categories and analyzing how the frequency of these peaks has changed over time, we can identify more nuanced patterns that annual summaries might obscure.
+To better understand how upper-tropospheric dynamics may vary not just year to year, but within different times of the year, we separated the data by season. Examining trends by season can provide insight into whether particular parts of the year,are becoming more dynamically active. By grouping the detected peaks into seasonal categories and analyzing how the frequency of ridges and troughs have changed over time, we can identify more nuanced patterns that annual summaries might obscure.
 
 ```{python}
 import xarray as xr
@@ -241,6 +241,7 @@ hgt_500_nyc = xr.concat(ts_list, dim="time")
 df = hgt_500_nyc.to_dataframe().reset_index()
 df["year"] = df["time"].dt.year
 df["month"] = df["time"].dt.month
+# had to do this manually 1,2,3..,12 because of how winter is 1 but 12 is also winter
 season_map = {12: "Winter", 1: "Winter", 2: "Winter",
              3: "Spring", 4: "Spring", 5: "Spring",
              6: "Summer", 7: "Summer", 8: "Summer",
@@ -270,15 +271,16 @@ plt.ylim(10, 21)
 plt.show()
 ```
 
-The figure displays the annual number of seasonal peaks in 500 hPa geopotential height over New York City from 1979 to 2021. Each line represents one season: Winter (red), Spring (orange), Summer (green), and Fall (blue).
-Winter consistently has the highest number of peaks each year, highlighting the season’s strong dynamical activity typically associated with more active weather patterns like storms and stronger jet streams. Fall follows closely behind, while Spring and Summer generally record fewer peaks, consistent with the relatively quieter atmospheric conditions expected in warmer months.
+The figure displays the annual number of seasonal peaks in 500 hPa geopotential height over New York City from 1980 to 2021. Each line represents one season: Winter (red), Spring (orange), Summer (green), and Fall (blue).
+Winter consistently has the highest number of peaks each year, highlighting the season’s strong dynamical activity typically associated with more active weather patterns like storms. Fall follows closely behind, while Spring and Summer generally record fewer peaks, consistent with the relatively quieter atmospheric conditions expected in warmer months.
 
 Notably, Spring shows a sharp decline in peak counts during the early 1980s, stabilizing at lower values thereafter. Winter displays some variability across the record, with slight increases in peak counts in the early 2000s and mid 2010s. Summer remains relatively steady over time, although there are small oscillations year to year. Fall shows more variability but tends to hover around a similar range throughout the period.
+
 Overall, while there is year to year variability, the seasonal patterns remain remarkably stable. However, subtle increases or decreases within seasons,especially Winter’s slight upward swings in more recent years,may signal emerging shifts in the behavior of upper-tropospheric dynamics over the region. While seasonal patterns of peak frequency have remained relatively consistent since 1980, small but noticeable fluctuations,particularly during Winter, highlight the importance of monitoring subtle changes in upper-tropospheric dynamics, as even modest shifts can influence local and regional weather variability over time.
 
-To further investigate the characteristics of these upper-tropospheric peaks, we analyzed not only their frequency but also their intensity. By calculating the mean intensity of all identified peaks per year, we can assess whether the strength of these geopotential height anomalies has changed over time, regardless of how often they occur. This metric provides insight into the evolving magnitude of atmospheric ridges over New York City at the 500 hPa level. A visualization of these yearly mean peak intensities reveals whether certain decades experienced stronger average anomalies, which may point to broader climatic shifts or changes in the amplitude of mid-latitude wave patterns that influence regional weather extremes.
+To further investigate the characteristics of these upper-tropospheric peaks, we analyzed not only their frequency but also their intensity. By calculating the mean geopotential height of all the data per year, we can assess whether the strength of these geopotential heights have changed over time, regardless of how often they occur. A visualization of these yearly mean peak intensities reveals whether certain decades experienced stronger average anomalies, which may point to broader climatic shifts or changes in the amplitude of mid-latitude wave patterns that influence regional weather extremes.
 
-## Peak Intensity Trends (500 hPa Geopotential Height)
+## Yearly Mean Geopotential Height 
 
 ```{python}
 
@@ -293,23 +295,24 @@ trend_line = model.predict(X)
 
 plt.figure(figsize=(12, 6))
 plt.plot(peak_intensity_trends.index, peak_intensity_trends, marker="o", linestyle="-", label="Observed")
-plt.plot(peak_intensity_trends.index, peak_intensity_smoothed, linestyle="--", label="Moving Average (5-year)")
+plt.plot(peak_intensity_trends.index, peak_intensity_smoothed, linestyle="--", label="5-Year Rolling Average")
 plt.plot(peak_intensity_trends.index, trend_line, linestyle="-.", label="Linear Trend", color="red")
 plt.title("Peak Intensity Trends (500 hPa Geopotential Height)")
 plt.xlabel("Year")
-plt.ylabel("Mean Peak Intensity (m)")
+plt.ylabel("Mean Geopotential Height(m)")
 plt.legend()
 plt.grid()
 plt.show()
 ```
 
-explain....
+The figure above shows the annual mean intensity of geopotential height ridges at 500 hPa over NYC from 1980 to 2021. The blue line with markers represents observed yearly values, the orange dashed line is the 5-year rolling average, and the red dash-dot line shows a linear trend.
+
+
+Despite year-to-year variability, the linear trend is slightly increasing, suggesting that the mean geopotential height over NYC has increased over time, which may be linked to more frequent or intense weather extremes like heatwaves.
 
 ## Identifying and Visualizing Extremes (top and bottom 5%) in 500 hPa Geopotential Height
 
-When analyzing upper-tropospheric dynamics, it is crucial not only to understand the overall patterns but also to specifically highlight the most extreme events. By isolating the top and bottom 5% of weekly averaged 500 hPa geopotential height values, we can focus on the strongest ridging (extreme highs) and deepest troughing (extreme lows) over NYC.
-
-This approach allows us to better capture and visualize the rare, high impact atmospheric configurations that may drive significant local weather events, such as heatwaves, cold snaps, and major storms. 
+By isolating the top and bottom 5% of weekly averaged 500 hPa geopotential height values, we can focus on the strongest ridging (extreme highs) and deepest troughing (extreme lows) over NYC. This approach allows us to better capture and visualize the rare, high impact atmospheric configurations that may drive significant local weather events, such as heatwaves, cold snaps, and major storms. 
 
 Below, we apply this method to identify and plot these extreme events.
 
@@ -367,15 +370,15 @@ plt.tight_layout()
 plt.show()
 ```
 
-The figure above shows the weekly averaged 500 hPa geopotential height over New York City from 1979 to 2021, highlighting the most extreme atmospheric events. The blue curve traces the natural week to week variability of the geopotential height field, giving us a sense of the background fluctuations in the upper-troposphere. Overlaid on this curve are two sets of highlighted points: the red dots represent the top 5% of weekly geopotential height values, corresponding to extreme ridging events, while the black dots capture the bottom 5% of values, signaling extreme troughing events. To better visualize where these extremes sit relative to the full distribution, we also include dashed lines marking the 95th percentile (in red) and the 5th percentile (in black).
+The figure above shows the weekly averaged 500 hPa geopotential height over New York City from 1980 to 2021, highlighting the most extreme atmospheric events. The blue curve traces the natural week to week variability of the geopotential height field, giving us a sense of the background fluctuations in the upper-troposphere. Overlaid on this curve are two sets of highlighted points, the red dots represent the top 5% of weekly geopotential height values, corresponding to extreme ridging events, while the black dots capture the bottom 5% of values, signaling extreme troughing events. To better visualize where these extremes sit relative to the full distribution, we also include dashed lines marking the 95th percentile (in red) and the 5th percentile (in black).
 
-This visualization allows us to isolate and study the most significant departures from typical conditions. By focusing on these extreme highs and lows, we can begin to uncover patterns associated with impactful weather events, such as heat waves linked to strong ridging or storms and cold air outbreaks associated with deep troughs. Identifying these extreme cases within the broader dataset provides a clearer lens for analyzing how the frequency and characteristics of extreme atmospheric conditions may have shifted over time, setting up the next steps in our analysis.
+This visualization allows us to isolate and study the most significant departures from typical conditions. Identifying these extreme cases within the broader dataset provides a clearer lens for analyzing how the frequency and characteristics of extreme atmospheric conditions may have shifted over time, setting up the next steps in our analysis.
 
 # Modeling Seasonal Cycles and Long Term Changes with Harmonic Regression
 
-To better understand the underlying structure of the 500 hPa geopotential height variability over New York City, we turn to harmonic regression. I chose this approach because the atmosphere naturally exhibits strong periodic behavior, particularly tied to the seasons. The rise and fall of geopotential heights throughout the year are not random; they follow a predictable, wave like pattern that harmonic regression is specifically designed to capture. By fitting sine and cosine functions to our data, we can model the repeating annual cycle with precision while also detecting any shifts or trends that depart from this expected rhythm.
+To better understand the underlying structure of the 500 hPa geopotential height variability over New York City, we turn to harmonic regression. I chose this approach because the atmosphere naturally exhibits strong periodic behavior, particularly tied to the seasons. The rise and fall of geopotential heights throughout the year are not random, they follow a predictable, wave like pattern that harmonic regression is specifically designed to capture. By fitting sine and cosine functions to our data, we can model the repeating annual cycle with precision while also detecting any shifts or trends that depart from this expected rhythm.
 
-Harmonic regression is particularly well suited for our research goals because it allows us to separate the regular, seasonally driven variability from the less predictable anomalies. In other words, it helps us see both the forest and the trees: we can quantify the typical yearly cycle of the atmosphere while also tracking how the timing, amplitude, or baseline of that cycle might be changing over time. This separation is crucial for identifying subtle but important signals, such as the amplification or weakening of seasonal peaks, or the gradual rise or fall in mean geopotential heights that could hint at broader climatic shifts.
+Harmonic regression is particularly well suited for our research goals because it allows us to separate the regular, seasonally driven variability from the less predictable anomalies. We can quantify the typical yearly cycle of the atmosphere while also tracking how the timing, amplitude, or baseline of that cycle might be changing over time. This separation is crucial for identifying subtle but important signals, such as the amplification or weakening of seasonal peaks, or the gradual rise or fall in mean geopotential heights that could hint at broader climatic shifts.
 
 To build our model, we incorporated several key components. First, we included a constant and a linear trend term to account for any long term changes in the data, such as a steady increase or decrease in average geopotential height over the decades. Next, to capture the strong seasonal cycle, we used a set of Fourier terms, representing annual periodicity with multiple harmonics to allow flexibility in the shape of the seasonal pattern. Finally, we fit a Seasonal ARIMA model to the residuals, helping account for any remaining autocorrelation and further improving the accuracy of our forecasts. Together, this Dynamic Harmonic Regression framework provides a powerful way to model both the predictable seasonal patterns and the less predictable long term variations in the 500 hPa geopotential height field over NYC.
 
@@ -389,9 +392,13 @@ This visualization serves as both a check on our model’s performance, how well
 ![](HarmonicRegression.png)
 
 Looking at the results of our Dynamic Harmonic Regression (DHR) model, we can see how effectively it captures the essential structure of the 500 hPa geopotential height variability over New York City. The observed data, shown in blue, oscillates in a strong, rhythmic seasonal cycle that persists over the full 1979–2021 period. Our DHR model picks up on this repeating pattern and extends it seamlessly into the forecast period, shown in red.
+
 The forecast maintains the familiar annual rise and fall in geopotential height, demonstrating that the seasonal signal is expected to persist into the coming years. However, one striking feature of the forecast is that it appears slightly more compressed. This could hint at a subtle weakening of the seasonal extremes, although further analysis would be needed to confirm whether this is a true physical signal or an artifact of the model smoothing the forecast.
+
 Importantly, the middle level around which the seasonal cycles oscillate, remains stable without a dramatic upward or downward trend. This suggests that, at least based on the historical patterns captured by our model, we do not expect a large shift in the average 500 hPa geopotential height over NYC in the immediate future.
+
 That said, even small changes in the amplitude or phase of the seasonal cycle can have important implications. Since the 500 hPa height is closely tied to the strength and position of ridges and troughs in the atmosphere, any change in its behavior could influence the frequency, intensity, or timing of extreme weather events, such as heat waves or heavy rainfall. 
+
 In short, the DHR model provides a powerful lens through which to understand not just what has happened, but what may lie ahead in the behavior of the upper-troposphere. 
 
 # Future Work
@@ -411,3 +418,5 @@ Finally, integrating additional atmospheric variables such as humidity, temperat
 3. Seabold, S., & Perktold, J. (2010). Statsmodels: Econometric and Statistical Modeling with Python. Proceedings of the 9th Python in Science Conference, Austin, TX, 92–96. https://doi.org/10.25080/Majora-92bf1922-011
 4. YouTube. December 15, 2023. Dynamic Harmonic Regression For Time Series Forecasting. YouTube. https://www.youtube.com/watch?v=Zgcry0SPUY8
 5. Compo, G. P., Whitaker, J. S., Sardeshmukh, P. D., Matsui, N., Allan, R. J., Yin, X., Gleason, B. E., Vose, R. S., Rutledge, G., Bessemoulin, P., Brönnimann, S., Brunet, M., Crouthamel, R. I., Grant, A. N., Groisman, P. Y., Jones, P. D., Kruk, M. C., Kruger, A. C., Marshall, G. J., Worley, S. J. (2011). The Twentieth Century Reanalysis Project. Quarterly Journal of the Royal Meteorological Society, 137(654), 1–28. https://doi.org/10.1002/qj.776
+6. Plotly Technologies Inc. (n.d.). Intro to animations in Python. Plotly. Retrieved April 2025, from https://plotly.com/python/animations/
+7. Meduri, P.Take Your Forecasting to the Next Level with Harmonic Regression. Medium. Retrieved March 2025, from https://medium.com/data-science/take-your-forecasting-to-the-next-level-with-harmonic-regression-5a8515f63295
