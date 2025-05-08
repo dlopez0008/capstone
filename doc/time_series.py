@@ -36,6 +36,7 @@ dp = DeterministicProcess(
 
 X = dp.in_sample()
 y = df["hgt"]
+# This was taken from Reference 4(Youtube Channel)
 
 # SARIMA model with optimized parameters
 model = SARIMAX(y, exog=X, order=(1, 1, 1), seasonal_order=(1, 1, 1, 52), enforce_stationarity=False)
@@ -60,45 +61,3 @@ plt.show()
 
 
 print(forecast.summary_frame())
-
-
-
-upper_threshold = np.percentile(df["hgt"], 95)
-lower_threshold = np.percentile(df["hgt"], 5)
-extreme_highs = df[df["hgt"] >= upper_threshold]
-extreme_lows = df[df["hgt"] <= lower_threshold]
-
-print(f"Extreme Highs (Top 5% threshold): {upper_threshold:.2f} m")
-print(f"Extreme Lows (Bottom 5% threshold): {lower_threshold:.2f} m")
-print(f"Total Extreme High Events: {len(extreme_highs)}")
-print(f"Total Extreme Low Events: {len(extreme_lows)}")
-
-plt.figure(figsize=(12,6))
-
-
-plt.plot(df.index, df["hgt"], label="500 hPa Geopotential Height", color='blue', alpha=0.6)
-plt.scatter(extreme_highs.index, extreme_highs["hgt"], color='red', label="Extreme Ridges (Top 5%)", alpha=0.8)
-plt.scatter(extreme_lows.index, extreme_lows["hgt"], color='black', label="Extreme Troughs (Bottom 5%)", alpha=0.8)
-plt.axhline(upper_threshold, color='red', linestyle='dashed', alpha=0.7, label="95th Percentile")
-plt.axhline(lower_threshold, color='black', linestyle='dashed', alpha=0.7, label="5th Percentile")
-plt.xlabel("Year")
-plt.ylabel("Geopotential Height (m)")
-plt.title("Extreme Events in 500 hPa Geopotential Height Over NYC")
-plt.legend()
-plt.grid()
-plt.show()
-
-
-
-
-plt.figure(figsize=(10, 5))
-plt.scatter(extreme_counts.index, extreme_counts.values, color='blue', label="Extreme Events")
-plt.plot(extreme_counts.index, np.poly1d(np.polyfit(extreme_counts.index, extreme_counts.values, 1))(extreme_counts.index), 
-         color='red', linestyle="dashed", label="Trend Line")
-
-plt.xlabel("Year")
-plt.ylabel("Number of Extreme Events")
-plt.title("Trend of Extreme 500 hPa Height Events Over NYC")
-plt.legend()
-plt.grid(True)
-plt.show()

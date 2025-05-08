@@ -2,6 +2,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import find_peaks
+from sklearn.linear_model import LinearRegression
 
 nyc_lat = 40.7128
 nyc_lon = 74.0060
@@ -38,4 +39,24 @@ plt.legend(title="Season")
 plt.grid()
 plt.yticks(np.arange(10, 21, 2)) 
 plt.ylim(10, 21)     
+plt.show()
+
+peak_intensity_trends = df_peaks.groupby("year")["peak_intensity"].mean()
+peak_intensity_smoothed = peak_intensity_trends.rolling(window=5, min_periods=1).mean()
+
+X = np.array(peak_intensity_trends.index).reshape(-1, 1)
+y = np.array(peak_intensity_trends.values).reshape(-1, 1)
+
+model = LinearRegression().fit(X, y)
+trend_line = model.predict(X)
+
+plt.figure(figsize=(12, 6))
+plt.plot(peak_intensity_trends.index, peak_intensity_trends, marker="o", linestyle="-", label="Observed")
+plt.plot(peak_intensity_trends.index, peak_intensity_smoothed, linestyle="--", label="Moving Average (5-year)")
+plt.plot(peak_intensity_trends.index, trend_line, linestyle="-.", label="Linear Trend", color="red")
+plt.title("Peak Intensity Trends (500 hPa Geopotential Height)")
+plt.xlabel("Year")
+plt.ylabel("Mean Peak Intensity (m)")
+plt.legend()
+plt.grid()
 plt.show()

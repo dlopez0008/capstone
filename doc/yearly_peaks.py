@@ -53,6 +53,3 @@ plt.grid()
 plt.yticks(np.arange(30, 65, 5)) 
 plt.ylim(30, 60)                  
 plt.show()
-
-slope = model.coef_[0]
-print(f"Linear trend slope: {slope:.2f} peaks per year")
