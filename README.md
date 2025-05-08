@@ -1,3 +1,4 @@
 # capstone
+All in the "doc" folder. 
 
 The code for the Harmonic Regression Model can be found in time_series.py. top_and_bottom_5%.py is code for the "Identifying and Visualizing Extremes (top and bottom 5%) in 500 hPa Geopotential Height" section. seasonal_peaks.py is where visuals for "Seasonal Analysis of Ridges and Troughs" and "Yearly Mean Geopotential Height" are located. yearly_peaks is code for "Frequency of Ridges and Troughs Over Time". test.py is the original code for the first step in analyis but to get it to have an animation I ran some edits. The refeences mentioned in time_series.py and the code for the first step in analysis are located in the reference section of the blog post.
